@@ -166,3 +166,55 @@ Reusing your existing projects:
 **Runner-up: #2 Away Day.** It's equally unique and aims at Boehly. It ranks lower on buildability because Qloo coverage of sports entities is unverified until your key arrives; check it with one `qloo api` search on day one.
 
 You pick. Phase 6 (PLAN.md, CLAIMS.md, checklist) starts after that.
+
+---
+
+## Phase 5b: Deep dive on the chosen direction: "Unspoken" (working name, keep private)
+
+**Idea:** photos of a person's things → a vision model detects cultural items → Qloo resolves them to entities → Qloo's taste graph proposes *new* things to try → the caregiver offers them as choices and logs the reaction → the profile sharpens → a weekly plan within sensory, mobility, age-rating and budget limits. For people who can't say what they love, through their caregivers.
+
+### Who it's for (sourced)
+| Group | Size | Source |
+|---|---|---|
+| Autistic children (US) | 1 in 31 8-year-olds (2022 data, CDC 2025 report) | https://abc7.com/post/estimated-1-31-children-have-autism-diagnosis-rates-increase-us-cdc/16179092/ |
+| …of whom minimally verbal | 25–35% (definition-dependent) | https://thetransmitter.org/spectrum/whos-minimally-verbal-depends-ask |
+| Aphasia (US) | 2M+, possibly up to 4M; about 180K new cases a year; more common than CP or Parkinson's | https://aphasia.org/faq-list/how-common-is-aphasia/ |
+
+### How it's done today (the problem space)
+- Clinicians use **stimulus preference assessments** because self-report "is unreliable or impossible due to limited verbal abilities." The main formats are **MSWO** (an array of 6–8 items; the person picks, the picked item is removed, and the next trial repeats until all are picked) and **paired-stimulus** (two items at a time). The candidate list is seeded by a caregiver interview (**RAISD**). https://behavioristbookclub.com/aba-research/evidence/mswo-preference-assessment/
+- **Gap:** these methods only *rank items someone already thought of*. Nothing proposes new candidates. Unspoken's Qloo step fills exactly that gap, then reuses the clinically familiar MSWO choice format to test the proposals.
+- Closest existing tool: **MSWO PAT**, a free web tool that shows kids short video clips and ranks them by what they touch first. Its first choice matched the best reinforcer in 5 of 7 kids (about 70%). It ranks a fixed set and doesn't discover anything new. https://behavioristbookclub.com/aba-research/assessment-research/the-multiple-stimulus-without-replacement-preference-assessment-tool-a/
+- Other apps (AAC, Autism Assist) help a child *communicate a choice among known options*; none discovers new options. Search found no taste-discovery product for this group.
+- Evidence that taste fit matters:
+  - When leisure tasks matched an autistic adult's preference profile, engagement rose and problem behavior roughly halved.
+  - Special interests are linked to higher wellbeing, with a caveat about very high intensity.
+  - https://behavioristbookclub.com/aba-research/assessment-research/a-component-based-leisure-activity-assessment-for-adults-with-autism-s/ · https://pubmed.ncbi.nlm.nih.gov/39088145/
+- For aphasia and stroke, **preferred, familiar music** is used in rehab, and a trial (MASTER, NCT04441515) tests participant-preferred music within 24 h of stroke. https://clinicaltrials.gov/study/NCT04441515 · https://pmc.ncbi.nlm.nih.gov/articles/PMC12112711/
+
+### Sensitivities to get right (judges include an OpenAI board member)
+- **ABA is contested in the autistic community.** Frame the product around *choice, joy and agency*, not compliance or "reinforcers." Use "what they love," never "what to reward with." Borrow only the neutral choice format.
+- **Qloo SAFE_USE.md:** don't send personal data and don't infer traits about an individual. Design:
+  - Photos are processed by the vision model only and never sent to Qloo.
+  - Only public entity names and tags go to Qloo.
+  - No diagnosis is stored by default.
+  - A "describe this person" request is refused.
+- Present Qloo results as aggregate affinity, "people who love X also love Y," never as a claim about the person. The caregiver's logged reactions are the ground truth.
+
+### Rival check (2026-10-05)
+- `gh search repos`: qloo + photo, camera, vision, image, bookshelf, nonverbal, autism, caregiver, accessibility, disability, aphasia → **0 results**. `gh search code` for Qloo + image payloads → 0.
+- 41 cloned rivals: no hits for nonverbal, non-verbal, aphasia or cerebral palsy. The only disability-word hits were 1 "autista" each in booker and newcomer. 24 repos matched the camera/vision keyword pattern; I haven't checked whether any actually work from photos. The closest in spirit (care) are the dementia reminiscence apps memory-lane and encore, which are text-in.
+
+### Qloo data fit (from the docs; live checks need the key)
+- Entity types cover what's on a shelf: book, movie, tv_show, artist, video_game, brand, podcast, place, destination. https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide
+- `filter.content_rating` (MPAA) exists for movies and TV, which gives the age-appropriate constraint. https://docs.qloo.com/reference/parameters
+- `/search` resolves detected names to entity IDs; `v2/insights` with `signal.interests.entities` gives proposals; `v2/tags` and `analysis/compare` help explain them; `v2/trending` is optional.
+- **Day-1 key checks:**
+  1. coverage of children's media (Bluey, Pokémon, Thomas, Cocomelon) and of older adults' music by decade
+  2. search hit rate on 30 OCR-style noisy titles
+  3. location-based place results for sensory-friendly outings
+
+### Risks
+1. Vision misreads (spines at an angle, glare). Mitigation: a one-tap confirm or correct screen before any Qloo call; measure the detection hit rate on a fixed set of photos (that's the demo number).
+2. Kids' media coverage unverified. Mitigation: day-1 check; fall back to tags-level signals.
+3. Impact credibility. Mitigation: Sam recruits 2–3 real caregivers, SLPs or support workers to try it and quote. That's the one thing AI-built rivals can't fake.
+4. Tone. Mitigation: review the copy against neurodiversity-affirming language; no medical claims.
