@@ -218,3 +218,35 @@ You pick. Phase 6 (PLAN.md, CLAIMS.md, checklist) starts after that.
 2. Kids' media coverage unverified. Mitigation: day-1 check; fall back to tags-level signals.
 3. Impact credibility. Mitigation: Sam recruits 2–3 real caregivers, SLPs or support workers to try it and quote. That's the one thing AI-built rivals can't fake.
 4. Tone. Mitigation: review the copy against neurodiversity-affirming language; no medical claims.
+
+### Impact model (deep dive, 2026-10-05)
+
+**Scale: people who can't reliably say what they like**
+| Figure | Value | Source | Note |
+|---|---|---|---|
+| People with complex communication needs, worldwide | **97M+** | Beukelman & Light Q&A, https://brookespublishing.com/?p=26384 | Widely cited; confirm the primary source before the pitch |
+| …in the US | about **5M** | same | |
+| UK share who could benefit from AAC | **0.5%** of the population (536 per 100K); 97.8% of them fall under 9 conditions (dementia, Parkinson's, autism, learning disability, stroke, CP, head injury, MS, MND) | Creer et al., https://eprints.whiterose.ac.uk/110386 | Peer-reviewed |
+| AAC abandonment | **30–50%** of people given an AAC system abandon or under-use it | Communication Matters, https://www.communicationmatters.org.uk/wp-content/uploads/2019/10/AAC_Evidence_Base_Findings.pdf | Shows tools fail when they don't fit the person |
+| Autism, global | about **1 in 100** children (WHO average) | https://pmc.ncbi.nlm.nih.gov/articles/PMC9310578/ | US: 1 in 31 |
+| CP: unable to speak | **20–44%** of children with CP (24% at age 5–6 in a population sample) | https://pmc.ncbi.nlm.nih.gov/articles/PMC6986977 | |
+| Aphasia: isolation | **90%+** feel isolated; aphasia had the **largest negative effect on quality of life**, above cancer and Alzheimer's, in a population study | https://pmc.ncbi.nlm.nih.gov/articles/PMC3869916 · https://www.dovepress.com/quality-of-life-measurement-and-outcome-in-aphasia-peer-reviewed-fulltext-article-NDT | Leisure and social activity drop sharply |
+
+**Why not knowing someone's preferences hurts (the causal chain)**
+1. No reliable way to express a preference → the caregiver guesses → the same few activities and shows on repeat.
+2. **Low meaningful activity** is a named driver of challenging behavior in intellectual disability, alongside communication difficulty. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12569614/
+3. Preferred activities **reduce problem behavior and increase desirable behavior**, and choice-making interventions reduce challenging behavior. https://behavioristbookclub.com/aba-research/school-classroom/preferred-curricular-activities-and-reduced-problem-behaviors-in-stude/
+4. Caregivers of autistic children report higher burden and lower quality of life than caregivers of children without a disability, across all four quality-of-life domains. https://pmc.ncbi.nlm.nih.gov/articles/PMC11495581/
+5. In aphasia, lost leisure and social activity tracks loneliness and depression. Preferred, familiar music is already used in rehab (MASTER trial, NCT04441515).
+
+→ **Unspoken's claim:** widen the set of things a person gets to choose from, chosen by real taste data instead of guesswork, so they have more moments of genuine enjoyment and agency, and the caregiver has less trial and error. We claim to improve **choice and engagement**, not medical outcomes.
+
+**What the demo can actually show (measured, honest)**
+| Metric | How we measure it | Claim allowed |
+|---|---|---|
+| Detection hit rate | A fixed set of about 20 shelf and room photos with hand-labelled items → % of items detected and resolved to the correct Qloo entity | "Recognizes X% of items in our test set" plus the reproduce command |
+| Novelty | % of proposals the caregiver hadn't listed (the RAISD-style seed list) | "N new candidates per session" |
+| LLM-only vs Qloo | For the same seeds, a blind comparison: are the LLM-only suggestions generic or popular (popularity percentile), and does the LLM hallucinate titles that don't resolve in Qloo search? | "LLM-only picks: X% unresolvable or top-percentile generic; Qloo: Y%" |
+| Choice-session uptake (pilot) | With 2–3 real caregivers: % of proposed items chosen or enjoyed in a pick-from-a-set session | Only with real pilot data, labelled as a pilot (n=…) |
+
+**Not claimed:** therapy, diagnosis, behavior reduction, or clinical efficacy. Those need trials. Any sentence implying them is a CLAIMS.md FAIL.
