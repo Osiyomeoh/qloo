@@ -250,3 +250,32 @@ You pick. Phase 6 (PLAN.md, CLAIMS.md, checklist) starts after that.
 | Choice-session uptake (pilot) | With 2–3 real caregivers: % of proposed items chosen or enjoyed in a pick-from-a-set session | Only with real pilot data, labelled as a pilot (n=…) |
 
 **Not claimed:** therapy, diagnosis, behavior reduction, or clinical efficacy. Those need trials. Any sentence implying them is a CLAIMS.md FAIL.
+
+### Making it effective: evidence-based design rules (2026-10-05)
+
+| # | Finding | Source | Design rule for Unspoken |
+|---|---|---|---|
+| 1 | Partners predicted the topic preferences of adults with aphasia with only **65% accuracy**. Accuracy rose with time spent together, shared activities, and the partner's belief in the person's competence. People with moderate to severe aphasia *could* state preferences when given the Talking Mats framework | https://repository.up.ac.za/handle/2263/30371 | **"Guess first" mode:** before each choice session the caregiver predicts which card the person will pick. The app logs prediction vs actual choice, which makes the core problem measurable (a live "caregiver guessed right X% of the time" number) and shows the person's own voice beating the guess |
+| 2 | Video-based preference assessments correlated strongly with tangible ones (3 of 4 kids, same top items). For social and dynamic items, GIF/video matched true preference for 4 of 4 vs pictures for 2 of 4. Pictures are faster | https://pmc.ncbi.nlm.nih.gov/articles/PMC3405936 · https://behavioristbookclub.com/aba-research/assessment-research/a-comparison-of-picture-and-gif-based-preference-assessments-for-socia/ | **Choice cards use motion and sound where possible** (a short clip, an audio snippet); a still image is the fallback. The source of previews is an open question (Qloo returns entity images; clips need another source). Check on day 1 |
+| 3 | Free-operant (engagement-duration) assessment infers preference from **how long** someone engages, avoids taking items away, and is linked to lower problem behavior during assessment | https://behavioristbookclub.com/aba-research/topic/free-operant-preference-assessment/ | **Measure engagement time, not just the tap.** When chosen content plays inside the app, record seconds engaged before they leave. Nothing is ever snatched away; the person leaves when they want. Two signals: the choice (tap) plus engagement (duration) |
+| 4 | People with severe or profound disabilities may not reliably handle 6–8-item arrays | https://behavioristbookclub.com/aba-research/evidence/mswo-preference-assessment/ | **An adjustable array size of 2, 3 or 4 cards**, defaulting to 2 (paired) for people with the highest support needs |
+| 5 | "Indices of happiness": observable smiles, laughs and excited vocalizations vs frowns and cries, operationally defined and validated by Green & Reid for people with profound multiple disabilities | https://pmc.ncbi.nlm.nih.gov/articles/PMC1284173 | **Reaction logging uses defined, observable behaviors** (smiled or laughed, vocalized happily, reached for it again / turned away, covered ears, cried), not a vague 😊. Optionally two carers log independently, and the app shows their agreement |
+| 6 | Preferences were stable for about 80% of people over 3–6 months, but shift with satiation; reassess regularly | https://pmc.ncbi.nlm.nih.gov/articles/PMC1479785 | **Freshness and novelty built in:** every set mixes 1 proven favorite with 1–2 new options, weights recent choices more, and flags fatigue ("chosen less over the last 2 weeks") so the profile never freezes |
+| 7 | The one-page profile ("what people like and admire about me / what's important to me / how best to support me") is the standard person-centred-planning handover tool for new staff, schools and providers | https://www.dshs.wa.gov/sites/default/files/ALTSA/tbi/documents/One-PagePersonCenteredProfile.pdf · https://clep.rutgers.edu/educational-resources/person-centered-thinking-planning | **Export the profile as a one-page profile in that exact 3-heading format**, filled from *evidence* ("chose machine show 4/5 times"). Supported-living staff already use it, so it slots into their workflow with nothing new to learn |
+
+**Revised loop**
+```
+photos → detect items → caregiver confirms
+→ Qloo proposes related options (age-rated, within limits)
+→ caregiver GUESSES the pick (logged)
+→ 2–4 motion/sound cards (1 known favorite + new options)
+→ person chooses → engagement seconds measured in-app → defined reactions logged
+→ chosen/engaged items weighted up, rejected weighted down → next Qloo request
+→ profile traits = Qloo tags shared across their real choices
+→ one-page profile export (evidence-backed)
+```
+
+**Demo numbers this enables (no clinical claims)**
+- Caregiver guess accuracy vs the person's actual choice (the research baseline is 65%).
+- New items chosen per week that weren't on the caregiver's original list.
+- Engagement seconds: new picks vs the old repeat favorites.
