@@ -279,3 +279,38 @@ photos → detect items → caregiver confirms
 - Caregiver guess accuracy vs the person's actual choice (the research baseline is 65%).
 - New items chosen per week that weren't on the caregiver's original list.
 - Engagement seconds: new picks vs the old repeat favorites.
+
+### Evidence base: what's proven, what's new, how we'll prove the new part (2026-10-05)
+
+**Every step of the loop is an established method with years of peer-reviewed research behind it:**
+
+| Step in Unspoken | Established method | Since | Key evidence | Source |
+|---|---|---|---|---|
+| Offer items, watch which one the person approaches | Stimulus preference assessment | **1985** | Pace et al., JABA 18(3): approach behavior separates preferred from non-preferred stimuli in people with profound disabilities | https://pmc.ncbi.nlm.nih.gov/articles/PMC1279894 |
+| 2-card choice (default for the highest support needs) | Paired-stimulus (forced choice) | **1992** | Fisher et al., JABA 25(2): two items at a time gave better differentiation and **better predicted** what the person actually works for | https://pmc.ncbi.nlm.nih.gov/articles/PMC1279726 |
+| 3–4-card choice | MSWO | **1996** | DeLeon & Iwata, JABA 29(4): moderate to high rank agreement with paired-stimulus at **less than half the time** | https://pmc.ncbi.nlm.nih.gov/articles/PMC1284008 |
+| Measure how long they engage, never snatch anything away | Free-operant (engagement-duration) assessment | 1990s → | Measures cumulative engagement time, avoids item removal, and is linked to less problem behavior during assessment. Kang et al. (2013) showed format choice changes problem behavior | https://behavioristbookclub.com/aba-research/topic/free-operant-preference-assessment/ · https://pmc.ncbi.nlm.nih.gov/articles/PMC3251285 |
+| Log reactions as defined behaviors | Indices of happiness | **1996** | Green & Reid: validated observable happiness and unhappiness indicators for people with profound multiple disabilities | https://pmc.ncbi.nlm.nih.gov/articles/PMC1284173 |
+| Cards with motion and sound | Video-based preference assessment | 2010s | Video rankings correlate strongly with tangible ones; GIFs beat pictures for dynamic items | https://pmc.ncbi.nlm.nih.gov/articles/PMC3405936 |
+| Giving real choices | Choice-making interventions | **2004 review** | Shogren et al., meta-analysis (J. Positive Behavior Interventions 6(4)): choice-making **reduces problem behavior**; choice contributes to quality of life | https://link.springer.com/article/10.1007/s40489-018-00154-7 (cites it) |
+| Visual choice framework for people who can't speak | Talking Mats | **1998** (Univ. of Stirling, from CP research) | A scoping review found positive effects on communication effectiveness and involvement in decisions; evidence level "limited" | https://cris.maastrichtuniversity.nl/en/publications/using-talking-mats-to-support-conversations-with-communication-vu/ |
+| Caregiver guess vs actual choice | Partner prediction studies | 2010s | Partners got aphasia topic preferences right only **65%** of the time | https://repository.up.ac.za/handle/2263/30371 |
+| One-page profile handover | Person-centred planning | 1990s → | The standard tool to introduce a person to new staff, providers and schools | https://clep.rutgers.edu/educational-resources/person-centered-thinking-planning |
+
+**Why taste-graph proposals should fit this group (evidence that the content overlaps):**
+- **75%** of autistic youth have at least one special interest; 50% of those have two or more. Common topics: **vehicles/transport 19%, characters from movies/books/cartoons 15%, TV/DVDs/movies 13%, computers/video games 10%**, construction toys 9%, mechanical objects 9%. https://www.autismspeaks.org/science-news/special-interest-autism · https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8213190/
+- Characters, TV and films, games and books are exactly the entity types Qloo covers (movie, tv_show, book, video_game, artist, podcast, brand, place).
+- **Honest gap:** the largest category, **sensory-related interests at 44%**, is *not* a Qloo entity type. Unspoken handles it with caregiver-entered constraints and non-Qloo items (the "washing machine"), and says so in the README.
+
+**What is NEW and unproven (we say this plainly):**
+1. Using a **taste graph to propose candidates** for preference assessment. Today candidates come only from carer interviews (RAISD). No study has tested this; Unspoken is the first.
+2. **Photos of a person's things** as the seed list.
+3. Whether Qloo's general-population affinities transfer to individuals in this group.
+
+**How we'll generate our own evidence before Oct 30 (no clinical claims):**
+| Question | Measure | Allowed wording |
+|---|---|---|
+| Does photo → Qloo work? | Detection and entity-resolution hit rate on a labelled set of 20 photos (reproducible script) | "X% of items resolved on our test set" |
+| Do proposals add anything? | % of proposals not on the carer's own list | "N new candidates per session" |
+| Better than a generic LLM? | The same seeds into LLM-only vs Qloo: % unresolvable or hallucinated titles, popularity percentile (genericness), tag overlap with the seeds | "In our benchmark…" plus the command |
+| Does anyone actually choose the new items? | Pilot with 2–3 real caregivers (Sam recruits): choice rate and engagement seconds for new vs old items; carer guess accuracy vs the 65% baseline | "Pilot, n=3, not a clinical study" |
