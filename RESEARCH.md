@@ -314,3 +314,38 @@ photos → detect items → caregiver confirms
 | Do proposals add anything? | % of proposals not on the carer's own list | "N new candidates per session" |
 | Better than a generic LLM? | The same seeds into LLM-only vs Qloo: % unresolvable or hallucinated titles, popularity percentile (genericness), tag overlap with the seeds | "In our benchmark…" plus the command |
 | Does anyone actually choose the new items? | Pilot with 2–3 real caregivers (Sam recruits): choice rate and engagement seconds for new vs old items; carer guess accuracy vs the 65% baseline | "Pilot, n=3, not a clinical study" |
+
+## Three entries, three different ways to win (2026-10-06)
+
+Rules: several submissions allowed if "substantially different"; one prize per project; 4 equal criteria (Tech, Design, Impact, Idea). Each entry is aimed at a different strength and different judges so they don't compete with each other.
+
+### #1 Unspoken: wins on Impact + Idea
+- Judges it plays to: everyone on "Impact"; Seligman (AI for good). No rival in 41 repos targets nonverbal users or uses photos with Qloo.
+- Market: no incumbent. The nearest tool (MSWO PAT) ranks a fixed set and doesn't discover. Evidence: sections above.
+- Main risk: Qloo coverage of kids' media (day-1 check); SAFE_USE limits (handled: items, not people).
+
+### #2 Territory: wins on Tech + the 2025 winner pattern (B2B + geography)
+- Who: foreign sales agents who license a film territory by territory. Cannes (May) locks presales, Toronto (Sep) moves finished titles, AFM (Nov) fills the gap; Germany/France/UK/Japan are the core MG block banks want before lending; Spain, Benelux, Scandinavia, South Korea, MENA usually close at AFM. https://vitrina.ai/?p=141396 · https://thegotham.org/distribution-101-foreign-sales-agents/
+- Pain, in an incumbent's own words: agents decide "based on historical licensing data or festival performance" rather than forward-looking signals. https://www.muso.com/blog/what-film-sales-agents-dont-know-yet
+- **Incumbents exist** (so the idea is validated, not empty): MUSO (piracy/viewing demand by country, 850,000 titles), Vitrina (deal tracking), Cinando (buyer directory). Our edge must be what they don't do: **taste affinity** — "audiences who like your comparables also like X; in market Y that taste is over-indexed" — plus Qloo-generated comparable titles and pitch angles per territory. Don't claim "no tool exists".
+- Hackathon field: 0 of 41 rival repos touch film distribution. Timing: AFM is in November, right after judging.
+- Qloo fit: search → movie entity → insights with `filter.location.query` per territory city, heatmap (`urn:heatmap`, geohash-based) for where the taste concentrates, tags for pitch angles. Documented: https://docs.qloo.com/reference/insights-api-deep-dive
+- Judges: Calacanis (investor), Cedric (film/TV), Diolosa (heavy Qloo use).
+- Risk: Qloo location data may be strongest in US/EU cities, weaker for Lagos/Accra → check day 1; keep the demo on territories where data is strong.
+
+### #3 Away Day: wins on judge fit + a crisp business story
+- Who: partnerships/commercial staff at a club choosing tour cities and local sponsors. Tours are money events: Man United's 2025 Kuala Lumpur + Hong Kong trip reported at >$10m; Liverpool's Hong Kong + Japan £8–10m. Clubs pick on fan data (Liverpool cites 26m US fans) and sign local sponsors around tours (Spurs + Coupang in Korea; Liverpool + Japan Airlines). https://www.cityam.com/?p=2450573 · https://insidersport.com/2025/04/10/manchester-united-asia-preseason-tour/
+- **Incumbents exist**: Nielsen Sports Fan Insights (survey panels, about 9–12 countries), Two Circles (data agency for 400+ properties). https://www.research-live.com/article/news/nielsen-launches-sports-fan-insight-tool/id/5059862 · https://charterhouse.co.uk/portfolio/two-circles
+  Our edge: instant, any city, and cross-domain — "people here who like the club also like these brands/artists/places" → sponsor and activation shortlist, at agent speed, without a survey.
+- Judges: Boehly (owns Chelsea and Dodgers stakes), Abrams (Live Nation: events and venues).
+- Biggest risk: **Qloo coverage of sports clubs is unverified** (no "team" entity type is listed; clubs may sit under brand or person). Day-1 check decides go / no-go; fallback is the same tool for a touring artist or festival (fits Abrams).
+
+### How the three avoid hurting each other
+- Different users, different screens, different Qloo paths → clearly "substantially different".
+- Shared engineering (key proxy, allowlist, parser, eval tooling) is reused, so #2 and #3 start with tested infrastructure.
+- Order of effort stays: #1 first. #2 and #3 are each one sharp workflow, not half-built extras.
+
+### Day-1 checks that decide #2 and #3
+1. `filter.location.query` + heatmap results for 6 territory cities (Berlin, Paris, London, Tokyo, Seoul, Lagos): are results non-empty and different by city?
+2. `/search` for 10 clubs (Chelsea, Liverpool, Arsenal, Real Madrid, Barcelona, LA Dodgers, Lakers, Man United, PSG, Enyimba): do they resolve, and as what type?
+3. Insights with a club as the signal and `filter.type=brand` in one city: sensible sponsors?
