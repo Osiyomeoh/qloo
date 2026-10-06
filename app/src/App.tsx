@@ -30,20 +30,37 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
   }
 
   return (
-    <main>
-      <header>
-        <h1>{APP_NAME}</h1>
-        <p className="pitch">Find what a non-speaking child loves, by letting them choose. An agent picks a few things to show, you log which one they reach for, and it learns from every choice.</p>
-        {step === 'seed' && <ol className="how"><li><b>1</b>Name one thing they already love</li><li><b>2</b>The agent picks 2–4 things to show</li><li><b>3</b>Their choices become a one-page profile</li></ol>}
-        {client.mode === 'sample' && <p className="badge" role="status">Sample data — not live Qloo results</p>}
-      </header>
-      {step === 'seed' && <>
-        <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} onNext={propose} />
-        <label className="notes">Anything the agent should know? (optional, no names)
-          <input aria-label="Notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. no loud audio; manages 2 cards" />
-        </label>
-        <button className="primary" onClick={() => setStep('agent')} disabled={!seeds.length}>Let the agent run a session</button>
-      </>}
+    <>
+      <nav className="topbar">
+        <span className="brand"><Logo />{APP_NAME}</span>
+        {client.mode === 'sample'
+          ? <p className="badge" role="status">Sample data — not live Qloo results</p>
+          : <span className="pill">No account · no names · sessions stay on this device</span>}
+      </nav>
+      <main className={step === 'seed' ? 'home' : 'work'}>
+      {step === 'seed' && <div className="hero">
+        <header className="hero-copy">
+          <p className="eyebrow">For carers of non-speaking children</p>
+          <h1>Find what they love, <em>by letting them choose.</em></h1>
+          <p className="pitch">An agent picks a few things to show, you log which one they reach for, and it learns from every choice.</p>
+        </header>
+        <div className="panel">
+          <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} />
+          <label className="notes">Anything the agent should know? (optional, no names)
+            <input aria-label="Notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. no loud audio; manages 2 cards" />
+          </label>
+          <button className="primary" onClick={() => setStep('agent')} disabled={!seeds.length}>Let the agent run a session</button>
+          <button className="link manual" onClick={propose} disabled={!seeds.length}>Manual: show things to try</button>
+        </div>
+        <div className="hero-more">
+          <ol className="how"><li><b>1</b><span>Name one thing they already love</span></li><li><b>2</b><span>The agent picks 2–4 things to show</span></li><li><b>3</b><span>Their choices become a one-page profile</span></li></ol>
+          <ul className="trust">
+            <li><strong>Only titles go to Qloo</strong>Nothing about the child is sent, only the name of a show, film or book.</li>
+            <li><strong>Chosen, not guessed</strong>A favourite only counts when the child picked it.</li>
+            <li><strong>A standard method</strong>Confirm with MSWO, a published preference assessment.</li>
+          </ul>
+        </div>
+      </div>}
       {step === 'agent' && <AgentView seeds={seeds.map(s => ({ id: s.id, name: s.name, image: s.image }))} notes={notes} transport={agent} />}
       {step === 'propose' && (
         <section>
@@ -63,31 +80,36 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
       {step === 'profile' && (
         <Profile all={all} trials={trials} onMore={propose} />
       )}
-    </main>
+      </main>
+    </>
   )
 }
 
-function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; seeds: Entity[]; setSeeds: (s: Entity[]) => void; onNext: () => void }) {
+/** Two cards, one chosen: the whole method in a mark. */
+function Logo() {
+  return <svg className="logo" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--accent)" /><rect x="6" y="9" width="9" height="14" rx="2.5" fill="#fff" opacity=".45" /><rect x="17" y="7" width="9" height="16" rx="2.5" fill="#fff" /><circle cx="21.5" cy="26" r="1.6" fill="#fff" /></svg>
+}
+
+function SeedStep({ client, seeds, setSeeds }: { client: QlooClient; seeds: Entity[]; setSeeds: (s: Entity[]) => void }) {
   const [q, setQ] = useState('')
   const [hits, setHits] = useState<Entity[]>([])
   return (
-    <section>
+    <section className="seed">
       <h2>What do they already love?</h2>
-      <p>Type a show, film or book they return to. Nothing about the child is sent to Qloo, only the title.</p>
+      <p className="hint">Type a show, film or book they return to. Nothing about the child is sent to Qloo, only the title.</p>
+      <form className="search" onSubmit={async e => { e.preventDefault(); setHits(await client.search(q)) }}>
+        <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
+        <button>Find</button>
+      </form>
+      {hits.length > 0 && <ul className="hits">{hits.map(h => (
+        <li key={h.id}><button className={`hit${seeds.some(s => s.id === h.id) ? ' added' : ''}`} onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
+      ))}</ul>}
+      {seeds.length > 0 && <p className="favs">Favourites: {seeds.map(s => s.name).join(', ')}</p>}
       <PhotoSeed onTitles={async titles => {
         const found = (await Promise.all(titles.map(t => client.search(t).then(r => r[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
         setHits(found)
       }} />
-      <form onSubmit={async e => { e.preventDefault(); setHits(await client.search(q)) }}>
-        <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
-        <button>Find</button>
-      </form>
-      <ul className="list">{hits.map(h => (
-        <li key={h.id}><button className="link" onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
-      ))}</ul>
       <LastTime seeds={seeds} setSeeds={setSeeds} />
-      {seeds.length > 0 && <p>Favourites: {seeds.map(s => s.name).join(', ')}</p>}
-      <button className="secondary" onClick={onNext} disabled={!seeds.length}>Manual: show things to try</button>
     </section>
   )
 }
@@ -96,8 +118,9 @@ function PhotoSeed({ onTitles }: { onTitles: (t: string[]) => Promise<void> }) {
   const [msg, setMsg] = useState<string>()
   return (
     <label className="photo">
-      <span className="photo-btn">📷 Snap their shelf, toys or screen</span>
-      <small>We read the titles from the photo. The photo is not stored.</small>
+      <span className="photo-icon" aria-hidden><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg></span>
+      <span><span className="photo-btn">Or snap their shelf, toys or screen</span>
+      <small>We read the titles from the photo. The photo is not stored.</small></span>
       <input className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={async e => {
         const file = e.target.files?.[0]
         if (!file) return

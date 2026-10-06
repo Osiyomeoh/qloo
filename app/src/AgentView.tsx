@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { AgentOutput, Pending, TraceEvent } from './agent/engine'
 import type { Reaction, Trial } from './core/session'
 import { score, guessAccuracy } from './core/session'
@@ -182,8 +183,9 @@ export function CardFace({ c }: { c: Card }) {
 /** Full-screen, text-light view the carer turns towards the child. A tap is the choice. */
 export function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick: (id: string) => void; onClose: () => void }) {
   const [picked, setPicked] = useState<string>()
-  return (
-    <div className="child" role="dialog" aria-label="Child view">
+  // Portalled to <body> so no animated (transformed) ancestor can trap the fixed overlay inside its box.
+  return createPortal(
+    <div className="child" role="dialog" aria-modal="true" aria-label="Child view">
       <div className={`child-cards n${cards.length}`}>
         {cards.map(c => (
           <button key={c.id} className={`child-card ${picked === c.id ? 'picked' : picked ? 'gone' : ''}`} disabled={!!picked}
@@ -193,6 +195,7 @@ export function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick:
         ))}
       </div>
       <button className="link child-close" onClick={onClose}>Back to carer view</button>
-    </div>
+    </div>,
+    document.body,
   )
 }
