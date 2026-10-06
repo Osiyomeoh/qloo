@@ -7,6 +7,7 @@ import { MswoAssessment } from './Mswo'
 import { MSWO_ITEMS } from './core/mswo'
 import { loadHistory, saveSession, knownFavourites, type Item } from './core/history'
 import { Burst, POSITIVE, ReactionIcon, VoiceMark } from './Art'
+import { inline, prose } from './prose'
 
 export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; error?: string }>
 
@@ -68,7 +69,7 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
       <h2><span className={`orb ${busy ? 'busy' : p && !finished ? 'wait' : 'idle'}`} aria-hidden />Agent session</h2>
       {out?.qlooMode === 'sample' && <p className="badge">Agent is live; Qloo results are sample data</p>}
       <ol className="trace" aria-label="Agent steps">
-        {trace.map((t, i) => <li key={i} className={t.kind}><span aria-hidden>{ICON[t.kind]}</span> {t.kind === 'ask' ? askLabel(t) : t.kind === 'tool' || t.kind === 'result' ? <details><summary>{t.kind === 'tool' ? t.text.split(' ')[0] : 'result'}</summary><code>{t.kind === 'tool' ? t.text.slice(t.text.indexOf(' ') + 1) : t.text}</code></details> : t.text.replace(/\*\*/g, '')}</li>)}
+        {trace.map((t, i) => <li key={i} className={t.kind}><span aria-hidden>{ICON[t.kind]}</span> {t.kind === 'ask' ? inline(askLabel(t)) : t.kind === 'tool' || t.kind === 'result' ? <details><summary>{t.kind === 'tool' ? t.text.split(' ')[0] : 'result'}</summary><code>{t.kind === 'tool' ? t.text.slice(t.text.indexOf(' ') + 1) : t.text}</code></details> : <div className="say">{prose(t.text)}</div>}</li>)}
         {busy && <li className="thinking" role="status"><span aria-hidden />Thinking…</li>}
       </ol>
       {error && <p className="warn" role="alert">{error}</p>}
@@ -98,7 +99,7 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
   const secs = chosen ? Math.round((Date.now() - start.current) / 1000) : 0
   return (
     <div className="trial">
-      <p className="why">{why}</p>
+      <p className="why">{inline(why)}</p>
       {!guess && <p><strong>Carer first:</strong> which will they pick?</p>}
       {guess && chosen === undefined && <p>Now let them choose. Tap the one they reach for, look at, or ask for.</p>}
       <div className={`cards n${cards.length}`}>
@@ -152,8 +153,8 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
   return (
     <div className="finish">
       {confirmed.length > 0 && <p className="win"><Burst n={14} />New favourite found: {confirmed.map(name).join(', ')}</p>}
-      <p>{data.summary.replace(/\*\*/g, '')}</p>
-      {data.next_time && <p><strong>Next time:</strong> {data.next_time.replace(/\*\*/g, '')}</p>}
+      <div className="summary">{prose(data.summary)}</div>
+      {data.next_time && <p><strong>Next time:</strong> {inline(data.next_time)}</p>}
       <p className="src">Shown by choice: {trials.filter(t => t.chosen).length} choices in {trials.length} trials. Carer guessed right {g.matched} of {g.total}.</p>
       <article className="love" aria-label="What I love">
         <VoiceMark className="love-mark" />
@@ -166,7 +167,7 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
           })}
         </div>
         {liked.length > 0 && <p>When I like something I may: {liked.join(', ')}.</p>}
-        {data.next_time && <p>Try next: {data.next_time.replace(/\*\*/g, '')}</p>}
+        {data.next_time && <p>Try next: {inline(data.next_time)}</p>}
       </article>
       <button className="secondary" onClick={() => window.print()}>Print or save as PDF</button>
       <p className="src">Saved on this device only, so the next session can build on it.</p>

@@ -48,7 +48,7 @@ All of it is in [CLAIMS.md](CLAIMS.md), with the evidence for each claim. In sho
 ```sh
 cd app
 npm install
-npm test                 # 70 tests, no keys needed
+npm test                 # 73 tests, no keys needed
 npm run dev              # sample mode: clearly labelled sample data, no keys, no network
 ```
 

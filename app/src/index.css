@@ -129,6 +129,11 @@ input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
 .trace .tool, .trace .result { color: var(--muted); font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .8rem; }
 .trace .error { color: var(--accent-ink); }
 .trace .ask { font-weight: 600; }
+.say p, .summary p { margin: 0 0 6px; }
+.say p:last-child, .summary p:last-child { margin-bottom: 0; }
+.say ul, .say ol, .summary ul, .summary ol { margin: 4px 0 8px; padding-left: 20px; }
+.trace .say li, .summary li { padding: 2px 0; }
+.trace .say li::before { content: none; }
 .trace details { display: inline-block; vertical-align: top; max-width: 100%; }
 .trace details summary { cursor: pointer; color: var(--muted); list-style: none; display: inline-flex; gap: 6px; align-items: center; padding: 2px 10px; border-radius: 999px; background: var(--bg-2); }
 .trace details summary::-webkit-details-marker { display: none; }
