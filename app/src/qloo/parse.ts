@@ -1,8 +1,8 @@
 // Parses Qloo /search and /v2/insights responses into our Entity shape.
 // Mirrors the official harness (results array, or results.entities; entity_id or id).
 // Tag shape is confirmed against live responses once the key arrives (PLAN day-1 checks).
-import type { EntityType } from '../core/qlooRequest'
-import type { Entity } from './client'
+import type { EntityType } from '../core/qlooRequest.js'
+import type { Entity } from './client.js'
 
 type Rec = Record<string, unknown>
 const rec = (v: unknown): Rec | undefined => (v && typeof v === 'object' && !Array.isArray(v) ? (v as Rec) : undefined)
@@ -30,6 +30,7 @@ export function parseEntities(body: unknown, fallbackType: EntityType): Entity[]
       type: (urn?.slice('urn:entity:'.length) as EntityType) ?? fallbackType,
       ...(typeof rating === 'string' ? { rating } : {}),
       ...(typeof img === 'string' ? { image: img } : {}),
+      ...(typeof r.popularity === 'number' ? { popularity: r.popularity } : {}),
     })
   }
   return out

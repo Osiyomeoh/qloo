@@ -1,10 +1,10 @@
 // Qloo access behind one interface. The fixture client returns clearly labelled
 // sample data so the app and tests run without a key; the live client (planned)
 // calls our server proxy, which holds the key.
-import { buildInsightsParams, buildSearchParams, type EntityType } from '../core/qlooRequest'
-import { parseEntities } from './parse'
+import { buildInsightsParams, buildSearchParams, type EntityType } from '../core/qlooRequest.js'
+import { parseEntities } from './parse.js'
 
-export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string; image?: string }
+export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string; image?: string; popularity?: number }
 
 export interface QlooClient {
   readonly mode: 'sample' | 'live'

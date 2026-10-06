@@ -1,0 +1,10 @@
+[
+  { "name": "trains (TV)", "type": "tv_show", "seeds": ["Thomas & Friends", "Chuggington"] },
+  { "name": "vehicles (film)", "type": "movie", "seeds": ["Cars", "Planes"] },
+  { "name": "characters (TV)", "type": "tv_show", "seeds": ["Bluey", "Peppa Pig"] },
+  { "name": "superheroes (film)", "type": "movie", "seeds": ["Spider-Man: Into the Spider-Verse", "The Incredibles"] },
+  { "name": "dinosaurs (film)", "type": "movie", "seeds": ["The Land Before Time", "The Good Dinosaur"] },
+  { "name": "video games", "type": "video_game", "seeds": ["Minecraft", "Mario Kart 8"] },
+  { "name": "picture books", "type": "book", "seeds": ["The Very Hungry Caterpillar", "The Gruffalo"] },
+  { "name": "older music (aphasia/dementia)", "type": "artist", "seeds": ["Fela Kuti", "The Beatles"] }
+]
