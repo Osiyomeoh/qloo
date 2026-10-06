@@ -384,3 +384,22 @@ Run with `app/scripts/day1.ts` (repo #1) and `scripts/day1.ts` (qloo-two), every
 - Brand insights seeded with Chelsea in London: Man City, Premier League, Liverpool, Juventus, Arsenal… These are other clubs and leagues, not sponsors.
 - The location filter likely doesn't apply here either.
 - So the sponsor shortlist has to exclude sports clubs and leagues (by tag), and the city part has to come from the heatmap.
+
+### Day-1 follow-ups: redesign of #2 and #3 (2026-10-06)
+- **Heatmap fields:**
+  - `query.affinity` is rescaled within each request (the mean is about 0.5 in every city), so it can't compare one city with another.
+  - `query.affinity_rank` can: Parasite scores Seoul 0.96 vs Lagos 0.82, and Amélie scores Paris 0.99 vs Tokyo 0.71.
+  - Cell counts vary a lot: Amélie had 1,662 cells in Paris but 3 in Lagos.
+  - `take` doesn't limit heatmap cells; one request returned 3,991.
+  - With no location, the heatmap returned 0 cells.
+- **Request limits:**
+  - Insights reject `take=100` (Qloo returns 400); 50 works.
+  - 6 parallel calls produced a 429, and even 2 at a time sometimes do.
+  - The live clients now retry a 429 twice with backoff (0.6 s, then 1.2 s), then show the error, and send at most 2 requests at a time.
+- **`filter.exclude.tags` works.** Excluding the `urn:tag:genre:brand:sports_organization*` tags (plus `mobile_app:sports`) turned Chelsea's brand list into Nike, Umbro, Adidas, Puma, Mercedes-Benz, Huawei, PlayStation and Hugo Boss.
+- **#2 Territory** now ranks territories by mean heatmap `affinity_rank` and shows the evidence count.
+  - Live: Amélie → France 0.99; King of Boys → Nigeria 0.98 (209 cells, every other territory under 4 cells or empty); Parasite → Germany 0.97, South Korea 0.96.
+  - Comparables are now global and labelled that way.
+- **#3 Away Day** now ranks cities the same way.
+  - Live: Lakers → Los Angeles 0.94; Real Madrid → São Paulo 0.85; Chelsea → Lagos 0.69.
+  - Sponsors come from one tag-excluded brand call, labelled as global.
