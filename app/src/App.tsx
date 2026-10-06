@@ -3,6 +3,7 @@ import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, type AgentTransport } from './AgentView'
+import { loadHistory, forgetHistory, knownFavourites } from './core/history'
 
 export const APP_NAME = 'Unspoken'
 
@@ -84,6 +85,7 @@ function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; see
       <ul className="list">{hits.map(h => (
         <li key={h.id}><button className="link" onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
       ))}</ul>
+      <LastTime seeds={seeds} setSeeds={setSeeds} />
       {seeds.length > 0 && <p>Favourites: {seeds.map(s => s.name).join(', ')}</p>}
       <button className="secondary" onClick={onNext} disabled={!seeds.length}>Manual: show things to try</button>
     </section>
@@ -184,5 +186,20 @@ function Profile({ all, trials, onMore }: { all: Entity[]; trials: Trial[]; onMo
       <button onClick={() => window.print()}>Print / save</button>{' '}
       <button onClick={onMore}>Find more to try</button>
     </section>
+  )
+}
+
+/** Earlier sessions, read from this device only. */
+function LastTime({ seeds, setSeeds }: { seeds: Entity[]; setSeeds: (s: Entity[]) => void }) {
+  const [h, setH] = useState(loadHistory)
+  if (!h.length) return null
+  const favs = knownFavourites(h)
+  const last = h[h.length - 1]
+  return (
+    <div className="last-time" aria-label="Last time">
+      <p><strong>Last time</strong> ({new Date(last.date).toLocaleDateString()}, {h.length} session{h.length > 1 ? 's' : ''} on this device): {favs.map(f => f.name).join(', ') || 'no favourites yet'}</p>
+      {favs.length > 0 && <button className="secondary" onClick={() => setSeeds([...seeds, ...favs.filter(f => !seeds.some(s => s.id === f.id)).slice(0, 5).map(f => (({ id: f.id, name: f.name, image: f.image, type: seeds[0]?.type ?? 'movie', tags: [] })))])}>Start from last session</button>}
+      <button className="link" onClick={() => { forgetHistory(); setH([]) }}>Forget</button>
+    </div>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentOutput, Pending, TraceEvent } from './agent/engine'
 import type { Reaction, Trial } from './core/session'
 import { score, guessAccuracy } from './core/session'
+import { loadHistory, saveSession, knownFavourites, type Item } from './core/history'
 
 export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; error?: string }>
 
@@ -45,7 +46,9 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
   useEffect(() => {
     if (started.current) return
     started.current = true
-    void call({ start: { seeds: seeds.map(({ id, name }) => ({ id, name })), notes } })
+    const h = loadHistory()
+    const history = { sessions: h.length, favourites: knownFavourites(h).map(f => f.name), neverChosen: [...new Set(h.flatMap(r => r.neverChosen.map(n => n.name)))] }
+    void call({ start: { seeds: seeds.map(({ id, name }) => ({ id, name })), notes, history } })
   })
 
   const respond = (pending: Pending, result: unknown) => {
@@ -132,6 +135,14 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
   const g = guessAccuracy(trials)
   const name = (id: string) => catalog.get(id)?.name ?? id
   const liked = [...new Set(trials.flatMap(t => t.reactions ?? []).filter(r => ['smile', 'laugh', 'reach', 'vocalise'].includes(r)))]
+  const saved = useRef(false)
+  useEffect(() => {
+    if (saved.current) return
+    saved.current = true
+    const item = (id: string): Item => { const c = catalog.get(id); return { id, name: c?.name ?? id, ...(c?.image ? { image: c.image } : {}) } }
+    const all = score(trials)
+    saveSession({ date: new Date().toISOString(), favourites: [...confirmed, ...seeds.map(s => s.id)].map(item), chosen: scored.map(s => item(s.id)), neverChosen: all.filter(s => s.shown >= 2 && s.chosen === 0).map(s => item(s.id)) })
+  })
   return (
     <div className="finish">
       {confirmed.length > 0 && <p className="win">New favourite found: {confirmed.map(name).join(', ')}</p>}
@@ -151,6 +162,7 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
         {data.next_time && <p>Try next: {data.next_time.replace(/\*\*/g, '')}</p>}
       </article>
       <button className="secondary" onClick={() => window.print()}>Print or save as PDF</button>
+      <p className="src">Saved on this device only, so the next session can build on it.</p>
     </div>
   )
 }

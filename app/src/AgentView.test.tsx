@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Full stack except the network and the model: real UI → real handler → real agent loop → sample Qloo.
-import { describe, it, expect } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { afterEach, describe, it, expect } from 'vitest'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { handleAgent } from './server/agentHandler'
@@ -11,6 +11,7 @@ const use = (id: string, name: string, input: unknown): Block => ({ type: 'tool_
 const turn = (...content: Block[]): ModelReply => ({ content, stop_reason: 'tool_use' })
 
 describe('agent session in the app', () => {
+  afterEach(() => { cleanup(); localStorage.clear() })
   it('agent reasons, calls Qloo, runs choices with the person, adapts, and celebrates only supported favourites', async () => {
     const script: ModelReply[] = [
       turn({ type: 'text', text: 'Start next to trains.' }, use('a', 'qloo_recommend', { type: 'tv_show', seed_ids: ['sample-0001'] })),
@@ -65,6 +66,26 @@ describe('agent session in the app', () => {
     const love = screen.getByRole('article', { name: 'What I love' })
     expect(within(love).getByText(/New favourite · picked 2×/)).toBeTruthy()
     expect(within(love).getByText(/Already loved/)).toBeTruthy()
+
+    // the session is remembered on this device and offered next time
+    cleanup()
+    render(<App agent={transport} />)
+    const last = screen.getByLabelText('Last time')
+    expect(within(last).getByText(/Chuggington/)).toBeTruthy()
+    await u.click(within(last).getByRole('button', { name: 'Start from last session' }))
+    expect(screen.getByText(/Favourites: Chuggington, Thomas & Friends/)).toBeTruthy()
+    await u.click(within(last).getByRole('button', { name: 'Forget' }))
+    expect(screen.queryByLabelText('Last time')).toBeNull()
+    expect(localStorage.getItem('unspoken.history.v1')).toBeNull()
+  })
+
+  it('passes earlier sessions to the agent, capped and cleaned', async () => {
+    let first = ''
+    const callModel: CallModel = async (_s, messages) => { first ||= JSON.stringify(messages[0]); return turn({ type: 'text', text: 'ok' }) }
+    await handleAgent(JSON.stringify({ start: { seeds: [{ id: 'sample-0001', name: 'Thomas & Friends' }], history: { sessions: 2, favourites: ['Chuggington', 7], neverChosen: ['Cars'] } } }), {}, { callModel })
+    expect(first).toContain('Earlier sessions (2')
+    expect(first).toContain('confirmed favourites: Chuggington.')
+    expect(first).toContain('never chosen: Cars')
   })
 
   it('shows a clear error when the agent is not configured', async () => {

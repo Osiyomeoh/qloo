@@ -90,8 +90,8 @@ export function unspokenTools(qloo: QlooClient): { server: ServerTool[]; client:
 
 const slim = (e: { id: string; name: string; type: string; tags: string[]; image?: string }) => ({ id: e.id, name: e.name, type: e.type, tags: e.tags.slice(0, 6), ...(e.image ? { image: e.image } : {}) })
 
-export function openingMessage(seeds: { id: string; name: string }[], notes: string): Msg {
-  return { role: 'user', content: `Carer's goal: find new things they will love.\nKnown favourites (from the carer): ${JSON.stringify(seeds)}\nCarer notes: ${notes || 'none'}\nPlan the session and begin.` }
+export function openingMessage(seeds: { id: string; name: string }[], notes: string, history = ''): Msg {
+  return { role: 'user', content: `Carer's goal: find new things they will love.\nKnown favourites (from the carer): ${JSON.stringify(seeds)}\nCarer notes: ${notes || 'none'}\nPlan the session and begin.${history}` }
 }
 
 /** How often each id was chosen, read from the logged present_choice results (not from the model's own account). */
