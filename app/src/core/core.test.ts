@@ -26,6 +26,17 @@ describe('qloo request privacy guard', () => {
   it('rejects unknown ratings', () => {
     expect(() => buildInsightsParams({ type: 'movie', seedEntityIds: [A], contentRatings: ['X'] })).toThrow()
   })
+  it('allows Qloo tag ids as a filter, nothing else', () => {
+    expect(buildInsightsParams({ type: 'artist', seedEntityIds: [A], tags: ['urn:tag:genre:music:children'] }).get('filter.tags')).toBe('urn:tag:genre:music:children')
+    expect(() => buildInsightsParams({ type: 'artist', seedEntityIds: [A], tags: ['my son Tolu'] })).toThrow(/tag id/)
+  })
+  it('checks values too, so free text cannot ride in an allowed param', () => {
+    const ok = 'filter.type=urn:entity:book&signal.interests.entities=aaaaaaaa-1111,bbbbbbbb-2222&filter.tags=urn:tag:genre:media:childrens&filter.content_rating=G,PG&take=10'
+    expect(() => assertOnlyPublicSignals(new URLSearchParams(ok))).not.toThrow()
+    for (const bad of ['signal.interests.entities=Tolu is 6 and loves trains', 'filter.type=urn:entity:people', 'filter.tags=Tolu', 'filter.content_rating=G,age 6', 'take=ten', 'filter.exclude.entities=aaaaaaaa-1111,Tolu Ade']) {
+      expect(() => assertOnlyPublicSignals(new URLSearchParams(bad)), bad).toThrow(/not allowed/)
+    }
+  })
 })
 
 describe('session engine', () => {

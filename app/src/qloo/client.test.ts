@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { SampleClient, KID_RATINGS } from './client'
+import { SampleClient } from './client'
+import { KID_RATINGS } from '../core/kids'
 
 describe('sample client', () => {
   const c = new SampleClient()

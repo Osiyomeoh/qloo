@@ -18,7 +18,7 @@ export class ServerQlooClient implements QlooClient {
     return body
   }
   async search(query: string) { return parseEntities(await this.get('search', buildSearchParams(query)), 'movie') }
-  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[]) {
-    return parseEntities(await this.get('insights', buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings })), type)
+  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[], tags: string[] = []) {
+    return parseEntities(await this.get('insights', buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings, tags })), type)
   }
 }

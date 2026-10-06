@@ -1,5 +1,5 @@
 // Qloo access behind one interface. The fixture client returns clearly labelled
-// sample data so the app and tests run without a key; the live client (planned)
+// sample data so the app and tests run without a key; the live client
 // calls our server proxy, which holds the key.
 import { buildInsightsParams, buildSearchParams, type EntityType } from '../core/qlooRequest.js'
 import { parseEntities } from './parse.js'
@@ -9,7 +9,7 @@ export interface Entity { id: string; name: string; type: EntityType; tags: stri
 export interface QlooClient {
   readonly mode: 'sample' | 'live'
   search(query: string): Promise<Entity[]>
-  recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[]): Promise<Entity[]>
+  recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[], tags?: string[]): Promise<Entity[]>
 }
 
 const SAMPLE: Entity[] = [
@@ -29,8 +29,8 @@ export class SampleClient implements QlooClient {
     const q = query.trim().toLowerCase()
     return q ? SAMPLE.filter(e => e.name.toLowerCase().includes(q)) : []
   }
-  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[]) {
-    buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings }) // same guard as live
+  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[], tags: string[] = []) {
+    buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings, tags }) // same guard as live
     const seedTags = new Set(SAMPLE.filter(e => seeds.includes(e.id)).flatMap(e => e.tags))
     return SAMPLE
       .filter(e => !seeds.includes(e.id) && !exclude.includes(e.id))
@@ -41,8 +41,6 @@ export class SampleClient implements QlooClient {
       .map(x => x.e)
   }
 }
-
-export const KID_RATINGS = ['G', 'PG', 'TV-Y', 'TV-Y7', 'TV-G']
 
 /** Calls our server proxy (/api/qloo); the key never reaches the browser. */
 export class LiveClient implements QlooClient {
@@ -59,8 +57,8 @@ export class LiveClient implements QlooClient {
     const p = buildSearchParams(query); p.set('op', 'search')
     return parseEntities(await this.get(p), 'movie')
   }
-  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[]) {
-    const p = buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings })
+  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[], tags: string[] = []) {
+    const p = buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings, tags })
     p.set('op', 'insights')
     return parseEntities(await this.get(p), type)
   }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/client'
+import { SampleClient, type Entity, type QlooClient } from './qloo/client'
+import { KID_TYPES, recommendForKids } from './core/kids'
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, Tally, type AgentTransport } from './AgentView'
@@ -25,7 +26,8 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
     const { exclude } = nextSignals(trials)
     const chosen = nextSignals(trials).signal.filter(id => !seeds.some(s => s.id === id))
     const seedIds = [...seeds.map(s => s.id), ...chosen]
-    const r = await client.recommend(seeds[0].type, seedIds, exclude, KID_RATINGS)
+    const type = KID_TYPES.includes(seeds[0].type) ? seeds[0].type : 'tv_show'
+    const { entities: r } = await recommendForKids(client, type, seedIds, exclude)
     setProposals(prev => [...prev.filter(p => chosen.includes(p.id)), ...r.filter(e => !prev.some(p => p.id === e.id && chosen.includes(p.id)))].slice(0, 6))
     setStep('propose')
   }

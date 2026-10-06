@@ -23,7 +23,7 @@ describe('qloo proxy', () => {
   })
   it('blocks personal/demographic params before calling Qloo', async () => {
     const f = vi.fn()
-    for (const q of ['op=insights&signal.demographics.age=36_to_55', 'op=insights&signal.location=POINT(1 1)', 'op=search&query=x&name=Tolu']) {
+    for (const q of ['op=insights&signal.demographics.age=36_to_55', 'op=insights&signal.location=POINT(1 1)', 'op=search&query=x&name=Tolu', 'op=insights&filter.type=urn:entity:movie&signal.interests.entities=Tolu%20is%20six']) {
       expect((await proxyQloo(u(q), 'K', f)).status).toBe(400)
     }
     expect(f).not.toHaveBeenCalled()

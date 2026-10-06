@@ -13,7 +13,7 @@ About 75% of autistic young people have at least one special interest, and the m
 ## What it does
 
 1. **The carer names one thing the child already loves**, for example *Thomas & Friends*. Only the title goes to Qloo, nothing about the child.
-2. **An agent plans a choice session.** Claude (Sonnet 4.6 on AWS Bedrock) uses Qloo to find related titles, with Qloo's content-rating filter limiting films and shows to G, PG, TV-Y, TV-Y7 and TV-G. It shows two cards at a time and gives its reason for each pair.
+2. **An agent plans a choice session.** Claude (Sonnet 4.6 on AWS Bedrock) uses Qloo to find related things that are suitable for children (see below). It shows two cards at a time and gives its reason for each pair.
 3. **The carer guesses, then the child chooses.** The cards go full screen. The carer logs which one the child picked, how long they engaged and how they reacted (smile, reach, look away…).
 4. **The agent adapts.** It stays close to what won, branches across categories (show → book, game, music) through Qloo, or drops what isn't working. It stops after about 6 trials, once a new favourite is confirmed twice, or sooner if the child stops choosing or is upset. When a decision depends on something only the carer knows, it asks.
 5. **The result is a one-page profile in the child's voice**: *What I love*. Every line on it was chosen by the child, not guessed for them. It can be printed for school or a therapist.
@@ -23,8 +23,9 @@ There is also a manual mode without the agent, and photo seeding: snap a shelf o
 
 ## Safety by design
 
-- **Only titles and Qloo ids leave the app for Qloo.** An allowlist (`app/src/core/qlooRequest.ts`) is enforced again at the server proxy. On production, an insights call carrying an age demographic or free text is refused with a 400.
-- **The agent can't show invented items.** Every card id must come from the carer's seeds or from a Qloo result in this session (`present_choice.validate`).
+- **Only titles and Qloo ids leave the app for Qloo.** An allowlist (`app/src/core/qlooRequest.ts`) of parameter names and value formats is enforced again at the server proxy. On production, an insights call carrying an age demographic or free text is refused with a 400.
+- **Every card is suitable for children.** Films and shows go through Qloo's content-rating filter (G, PG, TV-Y, TV-Y7, TV-G). Books and music go through Qloo's children's genre tags. Games are checked in code for an ESRB rating of E or E10+. There are no podcasts, because Qloo's family podcasts are for parents. Without these filters, Qloo's podcasts for a *Thomas & Friends* fan were true crime (`app/src/core/kids.ts`).
+- **The agent can't show invented or unchecked items.** Every card must be one of the carer's seeds or a filtered `qloo_recommend` result from this session (`present_choice.validate`).
 - **It only celebrates what the choices support.** An item can be called a new favourite only if the child chose it at least twice in the session; the finish step is refused otherwise.
 - **No account, no names, no server-side storage.** Sessions stay in this browser's localStorage, with a Forget button.
 - **Not therapy, not diagnosis.** It describes what was chosen and for how long. It makes no claims about feelings or outcomes.
@@ -47,7 +48,7 @@ All of it is in [CLAIMS.md](CLAIMS.md), with the evidence for each claim. In sho
 ```sh
 cd app
 npm install
-npm test                 # 60 tests, no keys needed
+npm test                 # 70 tests, no keys needed
 npm run dev              # sample mode: clearly labelled sample data, no keys, no network
 ```
 
@@ -72,4 +73,4 @@ Deploys to Vercel as is: `app/api/*.ts` are the functions (`/api/agent`, `/api/q
 
 ## How it's built
 
-React 19 + TypeScript + Vite, with Vercel functions. The agent loop (`app/src/agent/engine.ts`) has budgets: 16 model turns and 24 Qloo calls per session, and one person-facing action at a time. Its tools are `qloo_search`, `qloo_recommend`, `present_choice`, `ask_carer` and `finish`. The MSWO scoring is plain code, not the model (`app/src/core/mswo.ts`). Tests: Vitest + Testing Library, including a scripted-model run from the UI through the handler and the loop.
+React 19 + TypeScript + Vite, with Vercel functions. The agent loop (`app/src/agent/engine.ts`) has budgets: 16 model turns and 24 Qloo calls per session, and one person-facing action at a time. Its tools are `qloo_search`, `qloo_recommend` (filtered for children), `present_choice`, `ask_carer` and `finish`. The MSWO scoring is plain code, not the model (`app/src/core/mswo.ts`). Tests: Vitest + Testing Library, including a scripted-model run from the UI through the handler and the loop.

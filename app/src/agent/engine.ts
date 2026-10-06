@@ -115,15 +115,3 @@ function summarise(out: unknown): string {
   if (Array.isArray(o?.entities)) return o.entities.length ? `${o.entities.length}: ${short(o.entities.slice(0, 5).map(e => e.name).join(', '), 140)}` : 'no results'
   return short(JSON.stringify(out), 140)
 }
-
-/** Every id that has appeared in a user turn (seeds) or a tool result. Used to stop the model inventing items. */
-export function knownIds(messages: Msg[]): Set<string> {
-  const ids = new Set<string>()
-  const scan = (s: string) => { for (const m of s.matchAll(/"id"\s*:\s*"([^"]+)"/g)) ids.add(m[1]) }
-  for (const m of messages) {
-    if (m.role !== 'user') continue
-    if (typeof m.content === 'string') scan(m.content)
-    else for (const b of m.content) if (b.type === 'tool_result' && !b.is_error) scan(b.content)
-  }
-  return ids
-}

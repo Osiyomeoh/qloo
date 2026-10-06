@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { runAgent, resume, knownIds, type CallModel, type ModelReply, type Block, type Msg } from './engine'
-import { SYSTEM, unspokenTools, openingMessage } from './unspoken'
+import { runAgent, resume, type CallModel, type ModelReply, type Block, type Msg } from './engine'
+import { SYSTEM, unspokenTools, openingMessage, cardIds } from './unspoken'
 import { SampleClient } from '../qloo/client'
 import { handleAgent } from '../server/agentHandler'
 
@@ -79,13 +79,30 @@ describe('agent loop', () => {
     expect(out.pending?.carry[0]).toMatchObject({ tool_use_id: 'b', is_error: true })
   })
 
-  it('knownIds reads seeds and successful tool results only', () => {
-    const ids = knownIds([
+  it('cards can only be seeds or successful qloo_recommend results: not search hits, errors or model text', () => {
+    const ids = cardIds([
       openingMessage(seeds, ''),
-      { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'x', content: '{"entities":[{"id":"q-1"}]}' }, { type: 'tool_result', tool_use_id: 'y', content: '"id":"bad"', is_error: true }] },
-      { role: 'assistant', content: [say('"id":"model-said"')] },
+      { role: 'assistant', content: [say('"id":"model-said"'), use('x', 'qloo_recommend', {}), use('y', 'qloo_recommend', {}), use('z', 'qloo_search', {})] },
+      { role: 'user', content: [
+        { type: 'tool_result', tool_use_id: 'x', content: '{"entities":[{"id":"q-1"}]}' },
+        { type: 'tool_result', tool_use_id: 'y', content: '"id":"bad"', is_error: true },
+        { type: 'tool_result', tool_use_id: 'z', content: '{"entities":[{"id":"crime-pod"}]}' },
+      ] },
     ])
     expect([...ids].sort()).toEqual(['q-1', 'sample-0001'])
+  })
+  it('present_choice refuses an id the agent only found with qloo_search', () => {
+    const present = tools().client.find(t => t.name === 'present_choice')!
+    const messages: Msg[] = [
+      openingMessage(seeds, ''),
+      { role: 'assistant', content: [use('s', 'qloo_search', { title: 'crime' })] },
+      { role: 'user', content: [{ type: 'tool_result', tool_use_id: 's', content: '{"entities":[{"id":"crime-pod"}]}' }] },
+    ]
+    expect(present.validate!({ items: [{ id: 'sample-0001', name: 'T' }, { id: 'crime-pod', name: 'C' }], why: 'x' }, messages)).toMatch(/crime-pod/)
+  })
+  it('qloo_recommend offers no podcasts', async () => {
+    const rec = tools().server.find(t => t.name === 'qloo_recommend')!
+    await expect(rec.run({ type: 'podcast', seed_ids: ['sample-0001'] })).rejects.toThrow(/type must be one of/)
   })
 })
 
