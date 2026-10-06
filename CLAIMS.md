@@ -5,8 +5,9 @@ Every public claim must map to code, a test, or a measurement. Status is updated
 | Claim | Backed by | Status |
 |---|---|---|
 | Nothing personal is sent to Qloo | `app/src/core/qlooRequest.ts` allowlist + tests | built (builder); proxy planned |
-| Each result is labelled by source (Qloo vs choice) | `app/src/core/profile.ts` + test | built (logic); UI planned |
-| Choice session follows published preference-assessment formats (paired, MSWO-style, engagement time) | `app/src/core/session.ts` + tests | built (logic); UI planned |
+| Each result is labelled by source (Qloo vs choice) | `app/src/core/profile.ts` + test | built (logic + UI on sample data) |
+| Choice session follows published preference-assessment formats (paired, MSWO-style, engagement time) | `app/src/core/session.ts` + tests | built (logic + UI on sample data) |
+| App runs end to end on labelled sample data | `app/src/App.test.tsx` click-through test | built |
 | Learns from choices (chosen → signal, rejected → excluded) | `nextSignals` + test | built (logic); live Qloo planned |
 | Photo → items hit rate X% on our 20-photo set | Committed eval script + set | planned (needs set) |
 | Qloo vs plain LLM: fewer invented/generic titles | Committed benchmark script | planned (needs key) |

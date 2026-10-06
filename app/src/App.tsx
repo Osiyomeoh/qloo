@@ -1,122 +1,150 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/client'
+import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
+import { buildProfile, SOURCE_LABEL } from './core/profile'
 
-function App() {
-  const [count, setCount] = useState(0)
+export const APP_NAME = 'Choices' // neutral working name until launch
+
+type Step = 'seed' | 'propose' | 'session' | 'profile'
+const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
+
+export default function App({ client = new SampleClient() as QlooClient }) {
+  const [step, setStep] = useState<Step>('seed')
+  const [seeds, setSeeds] = useState<Entity[]>([])
+  const [proposals, setProposals] = useState<Entity[]>([])
+  const [trials, setTrials] = useState<Trial[]>([])
+
+  const all = useMemo(() => [...seeds, ...proposals], [seeds, proposals])
+  const byId = useMemo(() => new Map(all.map(e => [e.id, e])), [all])
+
+  async function propose() {
+    const { exclude } = nextSignals(trials)
+    const chosen = nextSignals(trials).signal.filter(id => !seeds.some(s => s.id === id))
+    const seedIds = [...seeds.map(s => s.id), ...chosen]
+    const r = await client.recommend(seeds[0].type, seedIds, exclude, KID_RATINGS)
+    setProposals(prev => [...prev.filter(p => chosen.includes(p.id)), ...r.filter(e => !prev.some(p => p.id === e.id && chosen.includes(p.id)))].slice(0, 6))
+    setStep('propose')
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <main>
+      <header>
+        <h1>{APP_NAME}</h1>
+        {client.mode === 'sample' && <p className="badge" role="status">Sample data — not live Qloo results</p>}
+      </header>
+      {step === 'seed' && <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} onNext={propose} />}
+      {step === 'propose' && (
+        <section>
+          <h2>Things to try</h2>
+          <p className="src">{SOURCE_LABEL.qloo}: related to {seeds.map(s => s.name).join(', ')}. Age-rated.</p>
+          <ul className="list">{proposals.map(p => <li key={p.id}>{p.name} <small>{p.tags.join(' · ')}</small></li>)}</ul>
+          <button onClick={() => setStep('session')} disabled={!proposals.length}>Start a choice session</button>
+        </section>
+      )}
+      {step === 'session' && (
+        <Session
+          ids={[seeds[0].id, ...proposals.slice(0, 3).map(p => p.id)]}
+          byId={byId}
+          onDone={t => { setTrials(prev => [...prev, ...t]); setStep('profile') }}
+        />
+      )}
+      {step === 'profile' && (
+        <Profile all={all} trials={trials} onMore={propose} />
+      )}
+    </main>
   )
 }
 
-export default App
+function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; seeds: Entity[]; setSeeds: (s: Entity[]) => void; onNext: () => void }) {
+  const [q, setQ] = useState('')
+  const [hits, setHits] = useState<Entity[]>([])
+  return (
+    <section>
+      <h2>What does he already love?</h2>
+      <p>Type a show, film or book he returns to. Nothing about him is sent to Qloo — only the title.</p>
+      <form onSubmit={async e => { e.preventDefault(); setHits(await client.search(q)) }}>
+        <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
+        <button>Find</button>
+      </form>
+      <ul className="list">{hits.map(h => (
+        <li key={h.id}><button className="link" onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
+      ))}</ul>
+      {seeds.length > 0 && <p>Favourites: {seeds.map(s => s.name).join(', ')}</p>}
+      <button onClick={onNext} disabled={!seeds.length}>Show things to try</button>
+    </section>
+  )
+}
+
+function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entity>; onDone: (t: Trial[]) => void }) {
+  const schedule = useMemo(() => pairedSchedule(ids), [ids])
+  const [i, setI] = useState(0)
+  const [trials, setTrials] = useState<Trial[]>([])
+  const [guess, setGuess] = useState<string>()
+  const [chosen, setChosen] = useState<string | null>()
+  const [reactions, setReactions] = useState<Reaction[]>([])
+  const start = useRef(0)
+  const [, tick] = useState(0)
+  useEffect(() => {
+    if (!chosen) return
+    const t = setInterval(() => tick(n => n + 1), 500)
+    return () => clearInterval(t)
+  }, [chosen])
+
+  const pair = schedule[i]
+  function finishTrial() {
+    const t: Trial = { shown: pair, chosen: chosen ?? null, carerGuess: guess, engagementMs: chosen ? Date.now() - start.current : 0, reactions }
+    const next = [...trials, t]
+    setGuess(undefined); setChosen(undefined); setReactions([])
+    if (i + 1 >= schedule.length) onDone(next)
+    else { setTrials(next); setI(i + 1) }
+  }
+
+  return (
+    <section>
+      <h2>Choice {i + 1} of {schedule.length}</h2>
+      {!guess && <p><strong>Carer first:</strong> which one will he pick?</p>}
+      {guess && chosen === undefined && <p>Now let him choose. Tap the one he reaches for, looks at, or asks for.</p>}
+      <div className="cards">
+        {pair.map(id => (
+          <button key={id} className={`card ${chosen === id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== id}
+            onClick={() => {
+              if (!guess) setGuess(id)
+              else if (chosen === undefined) { setChosen(id); start.current = Date.now() }
+            }}>
+            {byId.get(id)?.name}
+            {guess === id && <small>carer's guess</small>}
+          </button>
+        ))}
+      </div>
+      {guess && chosen === undefined && <button className="link" onClick={() => setChosen(null)}>No choice</button>}
+      {chosen && (
+        <>
+          <p className="timer">Engaged: {Math.round((Date.now() - start.current) / 1000)}s</p>
+          <div className="chips">{REACTIONS.map(r => (
+            <button key={r} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}>{r}</button>
+          ))}</div>
+        </>
+      )}
+      {chosen !== undefined && <button onClick={finishTrial}>{chosen ? 'He’s finished with it' : 'Next'}</button>}
+    </section>
+  )
+}
+
+function Profile({ all, trials, onMore }: { all: Entity[]; trials: Trial[]; onMore: () => void }) {
+  const items = all.map(e => ({ id: e.id, title: e.name, source: 'qloo' as const }))
+  const tags = Object.fromEntries(all.filter(e => score(trials).some(s => s.id === e.id && s.chosen > 0)).map(e => [e.id, e.tags]))
+  const lines = buildProfile(items, trials, tags)
+  const g = guessAccuracy(trials)
+  const top = score(trials)[0]
+  const seedIds = new Set(all.slice(0, 1).map(e => e.id))
+  return (
+    <section>
+      {top && !seedIds.has(top.id) && top.chosen > 0 && <p className="win">New favourite found: {all.find(e => e.id === top.id)?.name}</p>}
+      <h2>One-page profile</h2>
+      <ul className="list">{lines.map((l, k) => <li key={k}><span className={`tag ${l.source}`}>{SOURCE_LABEL[l.source]}</span> {l.text}</li>)}</ul>
+      <p>Carer guessed right {g.matched} of {g.total} times.</p>
+      <button onClick={() => window.print()}>Print / save</button>{' '}
+      <button onClick={onMore}>Find more to try</button>
+    </section>
+  )
+}
