@@ -62,6 +62,10 @@ function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; see
     <section>
       <h2>What does he already love?</h2>
       <p>Type a show, film or book he returns to. Nothing about him is sent to Qloo — only the title.</p>
+      <PhotoSeed onTitles={async titles => {
+        const found = (await Promise.all(titles.map(t => client.search(t).then(r => r[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
+        setHits(found)
+      }} />
       <form onSubmit={async e => { e.preventDefault(); setHits(await client.search(q)) }}>
         <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
         <button>Find</button>
@@ -72,6 +76,27 @@ function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; see
       {seeds.length > 0 && <p>Favourites: {seeds.map(s => s.name).join(', ')}</p>}
       <button onClick={onNext} disabled={!seeds.length}>Show things to try</button>
     </section>
+  )
+}
+
+function PhotoSeed({ onTitles }: { onTitles: (t: string[]) => Promise<void> }) {
+  const [msg, setMsg] = useState<string>()
+  return (
+    <label className="photo">
+      Photo of his things (shelf, toys, screen)
+      <input type="file" accept="image/*" capture="environment" onChange={async e => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setMsg('Looking…')
+        const data = await new Promise<string>(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(',')[1]); fr.readAsDataURL(file) })
+        const res = await fetch('/api/vision', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mediaType: file.type, data }) }).catch(() => undefined)
+        const body = await res?.json().catch(() => ({})) as { items?: { title: string }[]; error?: string } | undefined
+        if (!res?.ok || !body?.items) { setMsg(body?.error ?? 'Photo detection unavailable — type titles instead'); return }
+        setMsg(body.items.length ? `Found ${body.items.length}. Tap the ones that are right.` : 'Nothing recognised — type titles instead')
+        await onTitles(body.items.map(i => i.title))
+      }} />
+      {msg && <small role="status">{msg}</small>}
+    </label>
   )
 }
 
@@ -111,6 +136,7 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
               if (!guess) setGuess(id)
               else if (chosen === undefined) { setChosen(id); start.current = Date.now() }
             }}>
+            {byId.get(id)?.image && <img src={byId.get(id)!.image} alt="" />}
             {byId.get(id)?.name}
             {guess === id && <small>carer's guess</small>}
           </button>

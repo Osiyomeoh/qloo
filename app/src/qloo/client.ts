@@ -1,9 +1,10 @@
 // Qloo access behind one interface. The fixture client returns clearly labelled
 // sample data so the app and tests run without a key; the live client (planned)
 // calls our server proxy, which holds the key.
-import { buildInsightsParams, type EntityType } from '../core/qlooRequest'
+import { buildInsightsParams, buildSearchParams, type EntityType } from '../core/qlooRequest'
+import { parseEntities } from './parse'
 
-export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string }
+export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string; image?: string }
 
 export interface QlooClient {
   readonly mode: 'sample' | 'live'
@@ -42,3 +43,25 @@ export class SampleClient implements QlooClient {
 }
 
 export const KID_RATINGS = ['G', 'PG', 'TV-Y', 'TV-Y7', 'TV-G']
+
+/** Calls our server proxy (/api/qloo); the key never reaches the browser. */
+export class LiveClient implements QlooClient {
+  readonly mode = 'live' as const
+  private f: typeof fetch
+  constructor(f: typeof fetch = (...a) => fetch(...a)) { this.f = f }
+  private async get(p: URLSearchParams) {
+    const res = await this.f(`/api/qloo?${p}`)
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error((body as { error?: string }).error ?? `request failed (${res.status})`)
+    return body
+  }
+  async search(query: string) {
+    const p = buildSearchParams(query); p.set('op', 'search')
+    return parseEntities(await this.get(p), 'movie')
+  }
+  async recommend(type: EntityType, seeds: string[], exclude: string[], ratings: string[]) {
+    const p = buildInsightsParams({ type, seedEntityIds: seeds, excludeEntityIds: exclude, contentRatings: ratings })
+    p.set('op', 'insights')
+    return parseEntities(await this.get(p), type)
+  }
+}

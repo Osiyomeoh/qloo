@@ -48,3 +48,20 @@ export function assertOnlyPublicSignals(p: URLSearchParams): void {
     if (!ALLOWED_PARAMS.has(key)) throw new Error(`parameter not allowed to leave the app: ${key}`)
   }
 }
+
+const SEARCH_PARAMS = new Set(['query', 'types', 'take'])
+
+/** Search sends only a title the carer typed or confirmed, capped in length. */
+export function buildSearchParams(query: string, type?: EntityType): URLSearchParams {
+  const q = query.trim()
+  if (!q || q.length > 120) throw new Error('search query must be 1-120 characters')
+  const p = new URLSearchParams({ query: q, take: '5' })
+  if (type) p.set('types', `urn:entity:${type}`)
+  return p
+}
+
+export function assertSearchParams(p: URLSearchParams): void {
+  for (const key of p.keys()) if (!SEARCH_PARAMS.has(key)) throw new Error(`parameter not allowed to leave the app: ${key}`)
+  const q = p.get('query') ?? ''
+  if (!q.trim() || q.length > 120) throw new Error('search query must be 1-120 characters')
+}
