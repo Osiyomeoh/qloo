@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentOutput, Pending, TraceEvent } from './agent/engine'
 import type { Reaction, Trial } from './core/session'
 import { score, guessAccuracy } from './core/session'
+import { MswoAssessment } from './Mswo'
+import { MSWO_ITEMS } from './core/mswo'
 import { loadHistory, saveSession, knownFavourites, type Item } from './core/history'
 
 export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; error?: string }>
@@ -13,7 +15,7 @@ export const fetchTransport: AgentTransport = async body => {
   return out
 }
 
-interface Card { id: string; name: string; image?: string }
+export interface Card { id: string; name: string; image?: string }
 const ICON: Record<TraceEvent['kind'], string> = { thought: '💭', tool: '🔎', result: '↳', error: '⚠️', ask: '👤', done: '🏁' }
 const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
 
@@ -135,6 +137,7 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
   const g = guessAccuracy(trials)
   const name = (id: string) => catalog.get(id)?.name ?? id
   const liked = [...new Set(trials.flatMap(t => t.reactions ?? []).filter(r => ['smile', 'laugh', 'reach', 'vocalise'].includes(r)))]
+  const mswoItems = [...new Set([...confirmed, ...scored.map(s => s.id), ...seeds.map(s => s.id)])].slice(0, MSWO_ITEMS.max)
   const saved = useRef(false)
   useEffect(() => {
     if (saved.current) return
@@ -163,6 +166,7 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
       </article>
       <button className="secondary" onClick={() => window.print()}>Print or save as PDF</button>
       <p className="src">Saved on this device only, so the next session can build on it.</p>
+      {mswoItems.length >= MSWO_ITEMS.min && <MswoAssessment items={mswoItems.map(id => catalog.get(id) ?? { id, name: id })} />}
     </div>
   )
 }
@@ -176,7 +180,7 @@ export function CardFace({ c }: { c: Card }) {
 }
 
 /** Full-screen, text-light view the carer turns towards the child. A tap is the choice. */
-function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick: (id: string) => void; onClose: () => void }) {
+export function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick: (id: string) => void; onClose: () => void }) {
   const [picked, setPicked] = useState<string>()
   return (
     <div className="child" role="dialog" aria-label="Child view">

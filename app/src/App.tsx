@@ -3,7 +3,7 @@ import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, type AgentTransport } from './AgentView'
-import { loadHistory, forgetHistory, knownFavourites } from './core/history'
+import { loadHistory, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
 
 export const APP_NAME = 'Unspoken'
 
@@ -200,6 +200,34 @@ function LastTime({ seeds, setSeeds }: { seeds: Entity[]; setSeeds: (s: Entity[]
       <p><strong>Last time</strong> ({new Date(last.date).toLocaleDateString()}, {h.length} session{h.length > 1 ? 's' : ''} on this device): {favs.map(f => f.name).join(', ') || 'no favourites yet'}</p>
       {favs.length > 0 && <button className="secondary" onClick={() => setSeeds([...seeds, ...favs.filter(f => !seeds.some(s => s.id === f.id)).slice(0, 5).map(f => (({ id: f.id, name: f.name, image: f.image, type: seeds[0]?.type ?? 'movie', tags: [] })))])}>Start from last session</button>}
       <button className="link" onClick={() => { forgetHistory(); setH([]) }}>Forget</button>
+      <Trend h={h} />
     </div>
+  )
+}
+
+const LINE = ['#c2410c', '#0f766e', '#7c3aed', '#2563eb', '#be185d', '#65a30d']
+/** Selection % per item across assessed sessions. Only measured points are drawn; gaps stay gaps. */
+export function Trend({ h }: { h: SessionRecord[] }) {
+  const { dates, items } = mswoSeries(h)
+  if (!dates.length) return null
+  const top = items.sort((a, b) => (b.pcts.at(-1) ?? -1) - (a.pcts.at(-1) ?? -1)).slice(0, 6)
+  const W = 320, H = 120, x = (i: number) => (dates.length === 1 ? (W + 34) / 2 : 44 + (i * (W - 54)) / (dates.length - 1)), y = (p: number) => H - 10 - (p * (H - 20)) / 100
+  const label = top.map(it => `${it.name}: ${it.pcts.map(p => (p === null ? '–' : `${p}%`)).join(' → ')}`).join('; ')
+  return (
+    <figure className="trend-fig">
+      <figcaption>Preference assessments over time ({dates.length})</figcaption>
+      <svg className="trend" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
+        {[0, 50, 100].map(v => <g key={v}><line x1="34" x2={W} y1={y(v)} y2={y(v)} stroke="currentColor" strokeOpacity=".15" strokeDasharray="4 4" /><text x="0" y={y(v) + 4} fontSize="10" fill="currentColor" opacity=".6">{v}%</text></g>)}
+        {top.map((it, k) => {
+          const pts = it.pcts.map((p, i) => (p === null ? null : [x(i), y(p)] as const)).filter(Boolean) as (readonly [number, number])[]
+          return <g key={it.id} stroke={LINE[k]} fill={LINE[k]}>
+            {pts.length > 1 && <polyline fill="none" strokeWidth="2" points={pts.map(p => p.join(',')).join(' ')} />}
+            {pts.map(([a, b], i) => <circle key={i} cx={a} cy={b} r="3.5" />)}
+          </g>
+        })}
+      </svg>
+      {dates.length === 1 && <p className="src">One assessment so far. Run another on a later day to see a trend.</p>}
+      <ul className="legend">{top.map((it, k) => <li key={it.id}><span style={{ background: LINE[k] }} />{it.name} {it.pcts.at(-1) == null ? 'not in the last one' : `${it.pcts.at(-1)}%`}</li>)}</ul>
+    </figure>
   )
 }

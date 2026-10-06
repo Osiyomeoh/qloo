@@ -77,3 +77,16 @@ button.primary { box-shadow:0 4px 14px rgba(180,68,26,.25); font-weight:600; }
 
 .last-time { background: color-mix(in srgb, currentColor 5%, transparent); border-radius: 12px; padding: 12px 14px; margin: 12px 0; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .last-time p { margin: 0; flex-basis: 100%; }
+
+.mswo { margin-top: 20px; }
+.mswo table { width: 100%; border-collapse: collapse; }
+.mswo td, .mswo th { text-align: left; padding: 6px 4px; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
+.mswo .meter { display: inline-block; height: 8px; border-radius: 4px; background: #c2410c; vertical-align: middle; max-width: 60%; }
+.child-cards.n5, .child-cards.n6 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.trend { width: 100%; max-width: 520px; }
+.trend-fig { margin: 8px 0 0; flex-basis: 100%; }
+.trend-fig figcaption { font-size: .85rem; opacity: .8; }
+.legend { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .85rem; }
+.legend span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+.mswo td.pct { white-space: nowrap; }
+.mswo .meter { max-width: 48px; }
