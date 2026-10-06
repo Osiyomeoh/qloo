@@ -349,3 +349,38 @@ Rules: several submissions allowed if "substantially different"; one prize per p
 1. `filter.location.query` + heatmap results for 6 territory cities (Berlin, Paris, London, Tokyo, Seoul, Lagos): are results non-empty and different by city?
 2. `/search` for 10 clubs (Chelsea, Liverpool, Arsenal, Real Madrid, Barcelona, LA Dodgers, Lakers, Man United, PSG, Enyimba): do they resolve, and as what type?
 3. Insights with a club as the signal and `filter.type=brand` in one city: sensible sponsors?
+
+## Day-1 live Qloo checks (2026-10-06)
+
+Run with `app/scripts/day1.ts` (repo #1) and `scripts/day1.ts` (qloo-two), every call through `proxyQloo`'s allowlist. About 60 requests in total.
+
+**Response shapes (match our parsers):**
+- `/search` returns `results[]`.
+- `/v2/insights` returns `{success, results: {entities: [...]}}`.
+- Each entity has `entity_id`, `name`, `types`, `popularity`, `properties.image.url`, `properties.content_rating` (on film and TV), `tags[] = {id, name, type}` and `query.affinity` (about 0.92–0.96 for top results).
+- The heatmap returns `results.heatmap[] = {location: {latitude, longitude, geohash}, query: {affinity, affinity_rank, popularity}}`, and `parseHeatmap` already reads this.
+
+**#1 Unspoken:**
+- Coverage:
+  - Kids' TV, kids' film and older music all resolve, with images.
+  - Tags are rich: 108–163 per kids' show, 270–340 per film, 42–52 per artist.
+- Search on exact titles: 15 of 15 found the right item. On messy titles, 3 of 5 did:
+  - "bluey season 2" returned *The Jinx*.
+  - "Cocomelon" returned the spin-off *CoComelon Lane*.
+  - "thomas the tank engine" returned *All Engines Go*.
+  - So the app should show the top 3 for the carer to confirm instead of taking the first result automatically. This is already the UX, so keep it.
+- Exclusion works: the seed was never returned. `filter.content_rating=G,PG` worked: every film returned was G or PG.
+- Recommendations look sensible: Bluey → Peppa Pig, Pocoyo, Sarah & Duck, Hey Duggee.
+
+**#2 Territory:**
+- **`filter.location.query` has no effect on entity insights.** We seeded with Parasite and asked for movies in Berlin, Paris, London, Tokyo, Seoul and Lagos. All six cities returned the same list with the same affinities.
+- So the current `App.tsx`, which ranks territories with location-filtered movie insights, **would produce a meaningless ranking when live**.
+- The heatmap *does* respond to the city (Lagos returned cells around Lagos), so territory fit has to come from heatmap affinity instead. **Needs a redesign before any claim.**
+
+**#3 Away Day:**
+- Clubs are `urn:entity:brand`: Chelsea, Liverpool, Arsenal, Real Madrid, Barcelona, the Dodgers and the Lakers each have 87–114 tags.
+- Man United and PSG resolve as a *place* on an untyped search, so a brand-typed search is needed (it returns "Manchester United F.C." and "PSG").
+- Enyimba has no brand entity; only its stadium (a place) exists.
+- Brand insights seeded with Chelsea in London: Man City, Premier League, Liverpool, Juventus, Arsenal… These are other clubs and leagues, not sponsors.
+- The location filter likely doesn't apply here either.
+- So the sponsor shortlist has to exclude sports clubs and leagues (by tag), and the city part has to come from the heatmap.

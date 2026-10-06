@@ -108,6 +108,6 @@ describe('agent endpoint', () => {
     expect(r2.done.reason).toBe('finished')
   })
   it('rejects oversized sessions', async () => {
-    expect((await handleAgent('x'.repeat(400_001), { ANTHROPIC_API_KEY: 'k' })).status).toBe(413)
+    expect((await handleAgent('x'.repeat(400_001), { AWS_REGION: 'us-east-1' })).status).toBe(413)
   })
 })

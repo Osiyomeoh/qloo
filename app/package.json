@@ -13,6 +13,7 @@
     "benchmark": "tsx scripts/benchmark.ts"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.34.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

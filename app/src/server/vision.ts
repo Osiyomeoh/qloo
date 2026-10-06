@@ -1,6 +1,6 @@
 // Photo → list of cultural item names, for the carer to confirm. The photo is
 // sent only to the vision model, never to Qloo, and is not stored.
-export const VISION_MODEL = 'claude-sonnet-5-5'
+import { DEFAULT_VISION_MODEL, type Create } from './bedrock.js'
 const PROMPT = 'List the titles of films, TV shows, books, video games, music artists or characters visible in this photo (covers, boxes, toys, posters). Reply with JSON only: {"items":[{"title":string,"kind":"movie"|"tv_show"|"book"|"video_game"|"artist"|"character"}]}. Do not describe any person. If none, return {"items":[]}.'
 const KINDS = new Set(['movie', 'tv_show', 'book', 'video_game', 'artist', 'character'])
 const MAX_BYTES = 5 * 1024 * 1024
@@ -25,22 +25,16 @@ export function parseDetected(text: string): Detected[] {
   } catch { return [] }
 }
 
-export async function detectItems(body: { mediaType: string; data: string }, apiKey: string | undefined, f: typeof fetch = fetch): Promise<Response> {
-  if (!apiKey) return json(503, { error: 'Photo detection is not configured on this deployment' })
+export async function detectItems(body: { mediaType: string; data: string }, create: Create | undefined, model = DEFAULT_VISION_MODEL): Promise<Response> {
+  if (!create) return json(503, { error: 'Photo detection is not configured on this deployment' })
   if (!MEDIA.has(body.mediaType)) return json(400, { error: 'unsupported image type' })
   if (!body.data || body.data.length * 0.75 > MAX_BYTES) return json(413, { error: 'image must be under 5 MB' })
-  const res = await f('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({
-      model: VISION_MODEL, max_tokens: 800,
-      messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: body.mediaType, data: body.data } }, { type: 'text', text: PROMPT }] }],
-    }),
-    signal: AbortSignal.timeout(30_000),
+  const out = await create({
+    model, max_tokens: 800,
+    messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: body.mediaType, data: body.data } }, { type: 'text', text: PROMPT }] }],
   }).catch(() => undefined)
-  if (!res?.ok) return json(502, { error: 'Photo detection failed' })
-  const out = (await res.json()) as { content?: { type: string; text?: string }[] }
-  const text = (out.content ?? []).filter(c => c.type === 'text').map(c => c.text).join('')
+  if (!out) return json(502, { error: 'Photo detection failed' })
+  const text = (out.content ?? []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('')
   return json(200, { items: parseDetected(text) })
 }
 

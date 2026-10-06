@@ -2,7 +2,8 @@
 // The browser holds the conversation and sends it back; nothing is stored here.
 import { runAgent, resume, type AgentState, type Pending, type CallModel } from '../agent/engine.js'
 import { SYSTEM, unspokenTools, openingMessage } from '../agent/unspoken.js'
-import { anthropicModel } from '../agent/anthropic.js'
+import { claudeModel } from '../agent/anthropic.js'
+import { bedrockConfigured, bedrockCreate, DEFAULT_AGENT_MODEL, type BedrockEnv } from './bedrock.js'
 import { SampleClient, type QlooClient } from '../qloo/client.js'
 import { ServerQlooClient } from './qlooServer.js'
 
@@ -15,9 +16,9 @@ export interface AgentRequest {
 
 const MAX_BODY = 400_000
 
-export async function handleAgent(raw: string, env: { ANTHROPIC_API_KEY?: string; QLOO_API_KEY?: string; AGENT_MODEL?: string }, deps: { callModel?: CallModel; qloo?: QlooClient } = {}): Promise<Response> {
+export async function handleAgent(raw: string, env: BedrockEnv & { QLOO_API_KEY?: string }, deps: { callModel?: CallModel; qloo?: QlooClient } = {}): Promise<Response> {
   if (raw.length > MAX_BODY) return json(413, { error: 'session too long; start a new one' })
-  const callModel = deps.callModel ?? (env.ANTHROPIC_API_KEY ? anthropicModel(env.ANTHROPIC_API_KEY, env.AGENT_MODEL || undefined) : undefined)
+  const callModel = deps.callModel ?? (bedrockConfigured(env) ? claudeModel(bedrockCreate(env), env.BEDROCK_AGENT_MODEL || DEFAULT_AGENT_MODEL) : undefined)
   if (!callModel) return json(503, { error: 'The agent is not configured on this deployment' })
   const qloo = deps.qloo ?? (env.QLOO_API_KEY ? new ServerQlooClient(env.QLOO_API_KEY) : new SampleClient())
 

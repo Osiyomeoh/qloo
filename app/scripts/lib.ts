@@ -1,3 +1,4 @@
+import { bedrockCreate, DEFAULT_VISION_MODEL } from '../src/server/bedrock.js'
 // Shared helpers for the measurement scripts. Calls go through the same
 // allowlist as the app (proxyQloo), so the scripts can't send anything the app can't.
 import { proxyQloo } from '../src/server/qlooProxy.js'
@@ -34,15 +35,9 @@ export async function recommend(type: EntityType, seeds: string[], key: string, 
   return parseEntities(await qloo('insights', buildInsightsParams({ type, seedEntityIds: seeds, contentRatings: ['G', 'PG', 'TV-Y', 'TV-Y7', 'TV-G'].filter(r => type === 'movie' ? !r.startsWith('TV') : r.startsWith('TV')), take }), key), type)
 }
 
-export async function claude(content: unknown[], key: string, model = 'claude-sonnet-5-5'): Promise<string> {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model, max_tokens: 1000, messages: [{ role: 'user', content }] }),
-  })
-  if (!res.ok) throw new Error(`model error ${res.status}`)
-  const out = await res.json() as { content: { type: string; text?: string }[] }
-  return out.content.filter(c => c.type === 'text').map(c => c.text).join('')
+export async function claude(content: unknown[], model = process.env.BEDROCK_VISION_MODEL || DEFAULT_VISION_MODEL): Promise<string> {
+  const out = await bedrockCreate(process.env)({ model, max_tokens: 1000, messages: [{ role: 'user', content }] })
+  return out.content.filter((c: any) => c.type === 'text').map((c: any) => c.text).join('')
 }
 
 export const stamp = () => new Date().toISOString().slice(0, 19).replace(/:/g, '-')

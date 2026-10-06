@@ -64,14 +64,21 @@ describe('vision', () => {
       .toEqual([{ title: 'Cars', kind: 'movie' }, { title: 'Bluey', kind: 'movie' }])
     expect(parseDetected('no json')).toEqual([])
   })
-  it('validates input and needs a key', async () => {
+  it('validates input and needs a configured model', async () => {
+    const create = vi.fn()
     expect((await detectItems({ mediaType: 'image/png', data: 'x' }, undefined)).status).toBe(503)
-    expect((await detectItems({ mediaType: 'text/html', data: 'x' }, 'K')).status).toBe(400)
-    expect((await detectItems({ mediaType: 'image/png', data: 'a'.repeat(8_000_000) }, 'K')).status).toBe(413)
+    expect((await detectItems({ mediaType: 'text/html', data: 'x' }, create)).status).toBe(400)
+    expect((await detectItems({ mediaType: 'image/png', data: 'a'.repeat(8_000_000) }, create)).status).toBe(413)
+    expect(create).not.toHaveBeenCalled()
   })
   it('calls the model with the image and returns items only', async () => {
-    const f = vi.fn(async () => ok({ content: [{ type: 'text', text: '{"items":[{"title":"Thomas & Friends","kind":"tv_show"}]}' }] }))
-    const r = await detectItems({ mediaType: 'image/jpeg', data: 'abc' }, 'K', f as unknown as typeof fetch)
+    const create = vi.fn(async () => ({ stop_reason: 'end_turn', content: [{ type: 'text', text: '{"items":[{"title":"Thomas & Friends","kind":"tv_show"}]}' }] }))
+    const r = await detectItems({ mediaType: 'image/jpeg', data: 'abc' }, create, 'm')
     expect(await r.json()).toEqual({ items: [{ title: 'Thomas & Friends', kind: 'tv_show' }] })
+    expect((create.mock.calls[0] as any)[0].model).toBe('m')
+  })
+  it('reports a model failure as 502', async () => {
+    const r = await detectItems({ mediaType: 'image/jpeg', data: 'abc' }, async () => { throw new Error('model error 403') })
+    expect(r.status).toBe(502)
   })
 })
