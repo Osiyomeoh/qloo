@@ -61,7 +61,7 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
       <h2>Agent session</h2>
       {out?.qlooMode === 'sample' && <p className="badge">Agent is live; Qloo results are sample data</p>}
       <ol className="trace" aria-label="Agent steps">
-        {trace.map((t, i) => <li key={i} className={t.kind}><span aria-hidden>{ICON[t.kind]}</span> {t.kind === 'ask' ? askLabel(t) : t.text}</li>)}
+        {trace.map((t, i) => <li key={i} className={t.kind}><span aria-hidden>{ICON[t.kind]}</span> {t.kind === 'ask' ? askLabel(t) : t.kind === 'tool' || t.kind === 'result' ? <details><summary>{t.kind === 'tool' ? t.text.split(' ')[0] : 'result'}</summary><code>{t.kind === 'tool' ? t.text.slice(t.text.indexOf(' ') + 1) : t.text}</code></details> : t.text.replace(/\*\*/g, '')}</li>)}
         {busy && <li className="thinking" role="status">Thinking…</li>}
       </ol>
       {error && <p className="warn" role="alert">{error}</p>}
