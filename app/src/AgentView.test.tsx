@@ -18,6 +18,8 @@ describe('agent session in the app', () => {
       turn({ type: 'text', text: 'Chuggington won. Branch to films with trains.' }, use('c', 'qloo_recommend', { type: 'movie', seed_ids: ['sample-0003'] })),
       turn(use('d', 'present_choice', { items: [{ id: 'sample-0003', name: 'Chuggington' }, { id: 'sample-0005', name: 'The Polar Express' }], why: 'Does the train taste carry into films?' })),
       turn(use('e', 'finish', { summary: 'Trains carried across from shows to films.', new_favourite_ids: ['sample-0003', 'sample-0001'], next_time: 'Try a train picture book.' })),
+      // sample-0001 was never chosen, so finish is rejected and the agent retries with what the log supports
+      turn(use('f', 'finish', { summary: 'Trains carried across from shows to films.', new_favourite_ids: ['sample-0003'], next_time: 'Try a train picture book.' })),
     ]
     const callModel: CallModel = async () => script.shift()!
     const transport = async (body: unknown) => (await handleAgent(JSON.stringify(body), {}, { callModel })).json()
@@ -48,7 +50,7 @@ describe('agent session in the app', () => {
     expect(within(steps).getByText(/Branch to films/)).toBeTruthy()
     await pick('Polar', 'Chuggington')
 
-    // agent named a seed as a "new favourite" too; the UI only celebrates what the logged choices support
+    // the agent first named a never-chosen seed; finish was rejected against the logged choices
     expect(await screen.findByText('New favourite found: Chuggington')).toBeTruthy()
     expect(screen.getByText(/Carer guessed right 0 of 2/)).toBeTruthy()
     expect(screen.getByText(/Try a train picture book/)).toBeTruthy()

@@ -21,7 +21,7 @@ describe('agent loop', () => {
     const m = scripted([
       turn(say('Start near trains.'), use('t1', 'qloo_recommend', { type: 'tv_show', seed_ids: ['sample-0001'] })),
       turn(use('t2', 'present_choice', { items: [{ id: 'sample-0001', name: 'Thomas & Friends' }, { id: 'sample-0003', name: 'Chuggington' }], why: 'A favourite next to a close match.' })),
-      turn(say('He chose Chuggington.'), use('t3', 'finish', { summary: 'Chuggington is a new pick.', new_favourite_ids: ['sample-0003'] })),
+      turn(say('He chose Chuggington.'), use('t3', 'finish', { summary: 'Chuggington is a new pick.', new_favourite_ids: [] })),
     ])
     const { server, client } = tools()
     const cfg = { system: SYSTEM, serverTools: server, clientTools: client, callModel: m.call }

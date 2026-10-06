@@ -66,7 +66,7 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
       </ol>
       {error && <p className="warn" role="alert">{error}</p>}
       {p?.name === 'present_choice' && (
-        <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, result) }} />
+        <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, { ...(result as object), trials_so_far: trials.length + 1 }) }} />
       )}
       {p?.name === 'ask_carer' && <AskCarer pending={p} onAnswer={a => respond(p, { answer: a })} />}
       {finished && <Finish data={finished} trials={trials} catalog={catalog} seedIds={new Set(seeds.map(s => s.id))} />}
@@ -126,7 +126,7 @@ function Finish({ data, trials, catalog, seedIds }: { data: { summary: string; n
   return (
     <div className="finish">
       {confirmed.length > 0 && <p className="win">New favourite found: {confirmed.map(id => catalog.get(id)?.name ?? id).join(', ')}</p>}
-      <p>{data.summary}</p>
+      <p>{data.summary.replace(/\*\*/g, '')}</p>
       {data.next_time && <p><strong>Next time:</strong> {data.next_time}</p>}
       <p className="src">Shown by choice: {trials.filter(t => t.chosen).length} choices in {trials.length} trials. Carer guessed right {g.matched} of {g.total}.</p>
     </div>

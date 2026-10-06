@@ -55,7 +55,7 @@ export function unspokenTools(qloo: QlooClient): { server: ServerTool[]; client:
   const client: ClientTool[] = [
     {
       name: 'present_choice',
-      description: 'Show 2-4 cards to the person. The carer first guesses, then the person chooses. Returns {chosen_id|null, carer_guess_id, engagement_seconds, reactions[]}.',
+      description: 'Show 2-4 cards to the person. The carer first guesses, then the person chooses. Returns {chosen_id|null, carer_guess_id, engagement_seconds, reactions[], trials_so_far}. Use trials_so_far when counting trials; do not count yourself.',
       input_schema: {
         type: 'object',
         properties: {
@@ -82,6 +82,7 @@ export function unspokenTools(qloo: QlooClient): { server: ServerTool[]; client:
       name: 'finish',
       description: 'End the session with a short summary for the carer and the ids of new favourites (chosen at least twice, not among the seeds).',
       input_schema: { type: 'object', properties: { summary: { type: 'string' }, new_favourite_ids: { type: 'array', items: { type: 'string' } }, next_time: { type: 'string' } }, required: ['summary', 'new_favourite_ids'] },
+      validate: validateFinish,
     },
   ]
   return { server, client }
@@ -91,4 +92,30 @@ const slim = (e: { id: string; name: string; type: string; tags: string[]; image
 
 export function openingMessage(seeds: { id: string; name: string }[], notes: string): Msg {
   return { role: 'user', content: `Carer's goal: find new things they will love.\nKnown favourites (from the carer): ${JSON.stringify(seeds)}\nCarer notes: ${notes || 'none'}\nPlan the session and begin.` }
+}
+
+/** How often each id was chosen, read from the logged present_choice results (not from the model's own account). */
+export function choiceCounts(messages: Msg[]): Map<string, number> {
+  const uses = new Map<string, string>(), n = new Map<string, number>()
+  for (const m of messages) {
+    if (typeof m.content === 'string') continue
+    for (const b of m.content) {
+      if (b.type === 'tool_use') uses.set(b.id, b.name)
+      if (b.type === 'tool_result' && uses.get(b.tool_use_id) === 'present_choice') {
+        try {
+          const r = JSON.parse(typeof b.content === 'string' ? b.content : JSON.stringify(b.content)) as { chosen_id?: string | null }
+          if (r.chosen_id) n.set(r.chosen_id, (n.get(r.chosen_id) ?? 0) + 1)
+        } catch { /* not a choice result */ }
+      }
+    }
+  }
+  return n
+}
+
+export function validateFinish(input: unknown, messages: Msg[]): string | null {
+  const f = input as { summary?: unknown; new_favourite_ids?: unknown }
+  if (typeof f?.summary !== 'string' || !Array.isArray(f.new_favourite_ids)) return 'finish needs summary and new_favourite_ids'
+  const n = choiceCounts(messages)
+  const weak = f.new_favourite_ids.filter(id => (n.get(String(id)) ?? 0) < 2)
+  return weak.length ? `${weak.join(', ')} chosen fewer than 2 times in the logged trials; only list ids chosen at least twice (an empty list is fine), and say so honestly in the summary` : null
 }
