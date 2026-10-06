@@ -48,12 +48,23 @@ describe('agent session in the app', () => {
     await pick('Thomas', 'Chuggington')
     expect(await screen.findByText('Does the train taste carry into films?', { selector: '.why' })).toBeTruthy()
     expect(within(steps).getByText(/Branch to films/)).toBeTruthy()
-    await pick('Polar', 'Chuggington')
+    // second trial goes through the full-screen child view
+    const trial = document.querySelector('.trial') as HTMLElement
+    await u.click(within(trial).getByRole('button', { name: /Polar/ }))
+    await u.click(within(trial).getByRole('button', { name: /full screen/ }))
+    const child = screen.getByRole('dialog', { name: 'Child view' })
+    await u.click(within(child).getByRole('button', { name: /Chuggington/ }))
+    await u.click(within(child).getByRole('button', { name: 'Back to carer view' }))
+    await u.click(within(trial).getByRole('button', { name: 'smile' }))
+    await u.click(within(trial).getByRole('button', { name: /finished/ }))
 
     // the agent first named a never-chosen seed; finish was rejected against the logged choices
     expect(await screen.findByText('New favourite found: Chuggington')).toBeTruthy()
     expect(screen.getByText(/Carer guessed right 0 of 2/)).toBeTruthy()
-    expect(screen.getByText(/Try a train picture book/)).toBeTruthy()
+    expect(screen.getAllByText(/Try a train picture book/).length).toBe(2)
+    const love = screen.getByRole('article', { name: 'What I love' })
+    expect(within(love).getByText(/New favourite · picked 2×/)).toBeTruthy()
+    expect(within(love).getByText(/Already loved/)).toBeTruthy()
   })
 
   it('shows a clear error when the agent is not configured', async () => {

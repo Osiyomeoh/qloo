@@ -69,7 +69,7 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
         <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, { ...(result as object), trials_so_far: trials.length + 1 }) }} />
       )}
       {p?.name === 'ask_carer' && <AskCarer pending={p} onAnswer={a => respond(p, { answer: a })} />}
-      {finished && <Finish data={finished} trials={trials} catalog={catalog} seedIds={new Set(seeds.map(s => s.id))} />}
+      {finished && <Finish data={finished} trials={trials} catalog={catalog} seeds={seeds} />}
       {out?.done && !finished && <p>{out.done.reason === 'finished' ? out.done.text : 'Session limit reached.'}</p>}
     </section>
   )
@@ -83,6 +83,7 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
   const [guess, setGuess] = useState<string>()
   const [chosen, setChosen] = useState<string | null>()
   const [reactions, setReactions] = useState<Reaction[]>([])
+  const [show, setShow] = useState(false)
   const start = useRef(0)
   const [, tick] = useState(0)
   useEffect(() => { if (!chosen) return; const t = setInterval(() => tick(n => n + 1), 500); return () => clearInterval(t) }, [chosen])
@@ -96,11 +97,15 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
         {cards.map(c => (
           <button key={c.id} className={`card ${chosen === c.id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== c.id}
             onClick={() => { if (!guess) setGuess(c.id); else if (chosen === undefined) { setChosen(c.id); start.current = Date.now() } }}>
-            {c.image && <img src={c.image} alt="" />}{c.name}{guess === c.id && <small>carer's guess</small>}
+            <CardFace c={c} />{guess === c.id && <small>carer's guess</small>}
           </button>
         ))}
       </div>
-      {guess && chosen === undefined && <button className="link" onClick={() => setChosen(null)}>No choice</button>}
+      {guess && chosen === undefined && <div className="row">
+        <button className="secondary" onClick={() => setShow(true)}>Show to child, full screen</button>
+        <button className="link" onClick={() => setChosen(null)}>No choice</button>
+      </div>}
+      {show && <ChildScreen cards={cards} onPick={id => { setChosen(id); start.current = Date.now() }} onClose={() => setShow(false)} />}
       {chosen && <>
         <p className="timer">Engaged: {secs}s</p>
         <div className="chips">{REACTIONS.map(r => <button key={r} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}>{r}</button>)}</div>
@@ -118,17 +123,60 @@ function AskCarer({ pending, onAnswer }: { pending: Pending; onAnswer: (a: strin
   return <div className="trial"><p className="why">{question}</p><div className="chips">{options.map(o => <button key={o} onClick={() => onAnswer(o)}>{o}</button>)}</div></div>
 }
 
-function Finish({ data, trials, catalog, seedIds }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; seedIds: Set<string> }) {
+function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; seeds: Card[] }) {
   // Only celebrate favourites the logged choices actually support (chosen at least once, not a seed).
-  const chosenIds = new Set(score(trials).filter(s => s.chosen > 0).map(s => s.id))
+  const seedIds = new Set(seeds.map(s => s.id))
+  const scored = score(trials).filter(s => s.chosen > 0)
+  const chosenIds = new Set(scored.map(s => s.id))
   const confirmed = data.new_favourite_ids.filter(id => chosenIds.has(id) && !seedIds.has(id))
   const g = guessAccuracy(trials)
+  const name = (id: string) => catalog.get(id)?.name ?? id
+  const liked = [...new Set(trials.flatMap(t => t.reactions ?? []).filter(r => ['smile', 'laugh', 'reach', 'vocalise'].includes(r)))]
   return (
     <div className="finish">
-      {confirmed.length > 0 && <p className="win">New favourite found: {confirmed.map(id => catalog.get(id)?.name ?? id).join(', ')}</p>}
+      {confirmed.length > 0 && <p className="win">New favourite found: {confirmed.map(name).join(', ')}</p>}
       <p>{data.summary.replace(/\*\*/g, '')}</p>
-      {data.next_time && <p><strong>Next time:</strong> {data.next_time}</p>}
+      {data.next_time && <p><strong>Next time:</strong> {data.next_time.replace(/\*\*/g, '')}</p>}
       <p className="src">Shown by choice: {trials.filter(t => t.chosen).length} choices in {trials.length} trials. Carer guessed right {g.matched} of {g.total}.</p>
+      <article className="love" aria-label="What I love">
+        <h3>What I love</h3>
+        <p className="src">From a choice session on {new Date().toLocaleDateString()}. Every line below was chosen by me, not guessed for me.</p>
+        <div className="love-grid">
+          {[...confirmed, ...seeds.map(s => s.id), ...scored.map(s => s.id).filter(id => !confirmed.includes(id) && !seedIds.has(id))].map(id => {
+            const s = scored.find(x => x.id === id)
+            return <div key={id} className="love-item"><CardFace c={catalog.get(id) ?? { id, name: id }} /><small>{confirmed.includes(id) ? 'New favourite' : seedIds.has(id) ? 'Already loved' : 'Chosen'}{s ? ` · picked ${s.chosen}×` : ''}</small></div>
+          })}
+        </div>
+        {liked.length > 0 && <p>When I like something I may: {liked.join(', ')}.</p>}
+        {data.next_time && <p>Try next: {data.next_time.replace(/\*\*/g, '')}</p>}
+      </article>
+      <button className="secondary" onClick={() => window.print()}>Print or save as PDF</button>
+    </div>
+  )
+}
+
+const HUES = [12, 28, 160, 200, 260, 330]
+/** Card picture, or a coloured tile with the first letter when Qloo has no image. */
+export function CardFace({ c }: { c: Card }) {
+  if (c.image) return <><img src={c.image} alt="" />{c.name}</>
+  const h = HUES[[...c.name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % HUES.length]
+  return <><span className="tile" aria-hidden style={{ background: `hsl(${h} 70% 55%)` }}>{c.name.replace(/^(the|a)\s+/i, '').charAt(0).toUpperCase()}</span>{c.name}</>
+}
+
+/** Full-screen, text-light view the carer turns towards the child. A tap is the choice. */
+function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick: (id: string) => void; onClose: () => void }) {
+  const [picked, setPicked] = useState<string>()
+  return (
+    <div className="child" role="dialog" aria-label="Child view">
+      <div className={`child-cards n${cards.length}`}>
+        {cards.map(c => (
+          <button key={c.id} className={`child-card ${picked === c.id ? 'picked' : picked ? 'gone' : ''}`} disabled={!!picked}
+            onClick={() => { setPicked(c.id); onPick(c.id); setTimeout(onClose, 1400) }}>
+            <CardFace c={c} />
+          </button>
+        ))}
+      </div>
+      <button className="link child-close" onClick={onClose}>Back to carer view</button>
     </div>
   )
 }
