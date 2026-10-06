@@ -4,7 +4,7 @@ import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type 
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, type AgentTransport } from './AgentView'
 
-export const APP_NAME = 'Choices' // neutral working name until launch
+export const APP_NAME = 'Unspoken'
 
 type Step = 'seed' | 'propose' | 'session' | 'profile' | 'agent'
 const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
@@ -32,6 +32,8 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
     <main>
       <header>
         <h1>{APP_NAME}</h1>
+        <p className="pitch">Find what a non-speaking child loves, by letting them choose. An agent picks a few things to show, you log which one they reach for, and it learns from every choice.</p>
+        {step === 'seed' && <ol className="how"><li><b>1</b>Name one thing they already love</li><li><b>2</b>The agent picks 2–4 things to show</li><li><b>3</b>Their choices become a one-page profile</li></ol>}
         {client.mode === 'sample' && <p className="badge" role="status">Sample data — not live Qloo results</p>}
       </header>
       {step === 'seed' && <>
@@ -69,8 +71,8 @@ function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; see
   const [hits, setHits] = useState<Entity[]>([])
   return (
     <section>
-      <h2>What does he already love?</h2>
-      <p>Type a show, film or book he returns to. Nothing about him is sent to Qloo — only the title.</p>
+      <h2>What do they already love?</h2>
+      <p>Type a show, film or book they return to. Nothing about the child is sent to Qloo, only the title.</p>
       <PhotoSeed onTitles={async titles => {
         const found = (await Promise.all(titles.map(t => client.search(t).then(r => r[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
         setHits(found)
@@ -92,8 +94,9 @@ function PhotoSeed({ onTitles }: { onTitles: (t: string[]) => Promise<void> }) {
   const [msg, setMsg] = useState<string>()
   return (
     <label className="photo">
-      Photo of his things (shelf, toys, screen)
-      <input type="file" accept="image/*" capture="environment" onChange={async e => {
+      <span className="photo-btn">📷 Snap their shelf, toys or screen</span>
+      <small>We read the titles from the photo. The photo is not stored.</small>
+      <input className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={async e => {
         const file = e.target.files?.[0]
         if (!file) return
         setMsg('Looking…')
@@ -136,8 +139,8 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
   return (
     <section>
       <h2>Choice {i + 1} of {schedule.length}</h2>
-      {!guess && <p><strong>Carer first:</strong> which one will he pick?</p>}
-      {guess && chosen === undefined && <p>Now let him choose. Tap the one he reaches for, looks at, or asks for.</p>}
+      {!guess && <p><strong>Carer first:</strong> which one will they pick?</p>}
+      {guess && chosen === undefined && <p>Now let them choose. Tap the one they reach for, look at, or ask for.</p>}
       <div className="cards">
         {pair.map(id => (
           <button key={id} className={`card ${chosen === id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== id}
