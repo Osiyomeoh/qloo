@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/client'
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
-import { AgentView, type AgentTransport } from './AgentView'
+import { AgentView, Tally, type AgentTransport } from './AgentView'
 import { loadHistory, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
+import { Burst, HeroArt, POSITIVE, ReactionIcon } from './Art'
 
 export const APP_NAME = 'Unspoken'
 
@@ -44,6 +45,7 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
           <h1>Find what they love, <em>by letting them choose.</em></h1>
           <p className="pitch">An agent picks a few things to show, you log which one they reach for, and it learns from every choice.</p>
         </header>
+        <HeroArt />
         <div className="panel">
           <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} />
           <label className="notes">Anything the agent should know? (optional, no names)
@@ -55,9 +57,9 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
         <div className="hero-more">
           <ol className="how"><li><b>1</b><span>Name one thing they already love</span></li><li><b>2</b><span>The agent picks 2–4 things to show</span></li><li><b>3</b><span>Their choices become a one-page profile</span></li></ol>
           <ul className="trust">
-            <li><strong>Only titles go to Qloo</strong>Nothing about the child is sent, only the name of a show, film or book.</li>
-            <li><strong>Chosen, not guessed</strong>A favourite only counts when the child picked it.</li>
-            <li><strong>A standard method</strong>Confirm with MSWO, a published preference assessment.</li>
+            <li><TrustIcon d="M7 11V8a5 5 0 0 1 10 0v3M5.5 11h13v9h-13z" /><strong>Only titles go to Qloo</strong>Nothing about the child is sent, only the name of a show, film or book.</li>
+            <li><TrustIcon d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.5a6 6 0 0 1-5-2.7L4 14.5a1.5 1.5 0 0 1 2.5-1.7L9 15" /><strong>Chosen, not guessed</strong>A favourite only counts when the child picked it.</li>
+            <li><TrustIcon d="M8 4.5h8M9 3h6v3H9zM6 4.5H5v16h14v-16h-1M8.5 13l2.5 2.5 4.5-5" /><strong>A standard method</strong>Confirm with MSWO, a published preference assessment.</li>
           </ul>
         </div>
       </div>}
@@ -87,8 +89,10 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
 
 /** Two cards, one chosen: the whole method in a mark. */
 function Logo() {
-  return <svg className="logo" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--accent)" /><rect x="6" y="9" width="9" height="14" rx="2.5" fill="#fff" opacity=".45" /><rect x="17" y="7" width="9" height="16" rx="2.5" fill="#fff" /><circle cx="21.5" cy="26" r="1.6" fill="#fff" /></svg>
+  return <svg className="logo" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--accent)" /><rect className="lg-other" x="6" y="9" width="9" height="14" rx="2.5" fill="#fff" opacity=".45" /><rect className="lg-pick" x="17" y="7" width="9" height="16" rx="2.5" fill="#fff" /><circle className="lg-dot" cx="21.5" cy="26" r="1.6" fill="#fff" /></svg>
 }
+
+const TrustIcon = ({ d }: { d: string }) => <svg className="trust-icon" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
 function SeedStep({ client, seeds, setSeeds }: { client: QlooClient; seeds: Entity[]; setSeeds: (s: Entity[]) => void }) {
   const [q, setQ] = useState('')
@@ -101,10 +105,10 @@ function SeedStep({ client, seeds, setSeeds }: { client: QlooClient; seeds: Enti
         <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
         <button>Find</button>
       </form>
-      {hits.length > 0 && <ul className="hits">{hits.map(h => (
-        <li key={h.id}><button className={`hit${seeds.some(s => s.id === h.id) ? ' added' : ''}`} onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
+      {hits.length > 0 && <ul className="hits">{hits.map((h, k) => (
+        <li key={h.id} style={{ '--i': k } as CSSProperties}><button className={`hit${seeds.some(s => s.id === h.id) ? ' added' : ''}`} onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
       ))}</ul>}
-      {seeds.length > 0 && <p className="favs">Favourites: {seeds.map(s => s.name).join(', ')}</p>}
+      {seeds.length > 0 && <p key={seeds.length} className="favs">Favourites: {seeds.map(s => s.name).join(', ')}</p>}
       <PhotoSeed onTitles={async titles => {
         const found = (await Promise.all(titles.map(t => client.search(t).then(r => r[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
         setHits(found)
@@ -164,11 +168,12 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
   return (
     <section>
       <h2>Choice {i + 1} of {schedule.length}</h2>
+      <Tally trials={trials} total={schedule.length} name={id => byId.get(id)?.name ?? id} />
       {!guess && <p><strong>Carer first:</strong> which one will they pick?</p>}
       {guess && chosen === undefined && <p>Now let them choose. Tap the one they reach for, look at, or ask for.</p>}
       <div className="cards">
-        {pair.map(id => (
-          <button key={id} className={`card ${chosen === id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== id}
+        {pair.map((id, k) => (
+          <button key={`${i}-${id}`} style={{ '--i': k } as CSSProperties} className={`card ${chosen === id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== id}
             onClick={() => {
               if (!guess) setGuess(id)
               else if (chosen === undefined) { setChosen(id); start.current = Date.now() }
@@ -176,15 +181,16 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
             {byId.get(id)?.image && <img src={byId.get(id)!.image} alt="" />}
             {byId.get(id)?.name}
             {guess === id && <small>carer's guess</small>}
+            {chosen === id && <Burst />}
           </button>
         ))}
       </div>
       {guess && chosen === undefined && <button className="link" onClick={() => setChosen(null)}>No choice</button>}
       {chosen && (
         <>
-          <p className="timer">Engaged: {Math.round((Date.now() - start.current) / 1000)}s</p>
+          <p className="timer"><span className="beat" aria-hidden />Engaged: {Math.round((Date.now() - start.current) / 1000)}s</p>
           <div className="chips">{REACTIONS.map(r => (
-            <button key={r} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}>{r}</button>
+            <button key={r} data-tone={POSITIVE.has(r) ? 'up' : 'down'} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}><ReactionIcon r={r} />{r}</button>
           ))}</div>
         </>
       )}
@@ -202,7 +208,7 @@ function Profile({ all, trials, onMore }: { all: Entity[]; trials: Trial[]; onMo
   const seedIds = new Set(all.slice(0, 1).map(e => e.id))
   return (
     <section>
-      {top && !seedIds.has(top.id) && top.chosen > 0 && <p className="win">New favourite found: {all.find(e => e.id === top.id)?.name}</p>}
+      {top && !seedIds.has(top.id) && top.chosen > 0 && <p className="win"><Burst n={14} />New favourite found: {all.find(e => e.id === top.id)?.name}</p>}
       <h2>One-page profile</h2>
       <ul className="list">{lines.map((l, k) => <li key={k}><span className={`tag ${l.source}`}>{SOURCE_LABEL[l.source]}</span> {l.text}</li>)}</ul>
       <p>Carer guessed right {g.matched} of {g.total} times.</p>
@@ -244,8 +250,8 @@ export function Trend({ h }: { h: SessionRecord[] }) {
         {top.map((it, k) => {
           const pts = it.pcts.map((p, i) => (p === null ? null : [x(i), y(p)] as const)).filter(Boolean) as (readonly [number, number])[]
           return <g key={it.id} stroke={LINE[k]} fill={LINE[k]}>
-            {pts.length > 1 && <polyline fill="none" strokeWidth="2" points={pts.map(p => p.join(',')).join(' ')} />}
-            {pts.map(([a, b], i) => <circle key={i} cx={a} cy={b} r="3.5" />)}
+            {pts.length > 1 && <polyline className="trend-line" pathLength={1} fill="none" strokeWidth="2" points={pts.map(p => p.join(',')).join(' ')} />}
+            {pts.map(([a, b], i) => <circle key={i} className="trend-pt" style={{ '--i': i } as CSSProperties} cx={a} cy={b} r="3.5" />)}
           </g>
         })}
       </svg>

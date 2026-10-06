@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import type { AgentOutput, Pending, TraceEvent } from './agent/engine'
 import type { Reaction, Trial } from './core/session'
@@ -6,6 +6,7 @@ import { score, guessAccuracy } from './core/session'
 import { MswoAssessment } from './Mswo'
 import { MSWO_ITEMS } from './core/mswo'
 import { loadHistory, saveSession, knownFavourites, type Item } from './core/history'
+import { Burst, POSITIVE, ReactionIcon, VoiceMark } from './Art'
 
 export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; error?: string }>
 
@@ -64,13 +65,14 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
   const finished = p?.name === 'finish' ? (p.input as { summary: string; new_favourite_ids: string[]; next_time?: string }) : undefined
   return (
     <section className="agent">
-      <h2>Agent session</h2>
+      <h2><span className={`orb ${busy ? 'busy' : p && !finished ? 'wait' : 'idle'}`} aria-hidden />Agent session</h2>
       {out?.qlooMode === 'sample' && <p className="badge">Agent is live; Qloo results are sample data</p>}
       <ol className="trace" aria-label="Agent steps">
         {trace.map((t, i) => <li key={i} className={t.kind}><span aria-hidden>{ICON[t.kind]}</span> {t.kind === 'ask' ? askLabel(t) : t.kind === 'tool' || t.kind === 'result' ? <details><summary>{t.kind === 'tool' ? t.text.split(' ')[0] : 'result'}</summary><code>{t.kind === 'tool' ? t.text.slice(t.text.indexOf(' ') + 1) : t.text}</code></details> : t.text.replace(/\*\*/g, '')}</li>)}
-        {busy && <li className="thinking" role="status">Thinking…</li>}
+        {busy && <li className="thinking" role="status"><span aria-hidden />Thinking…</li>}
       </ol>
       {error && <p className="warn" role="alert">{error}</p>}
+      {(trials.length > 0 || p?.name === 'present_choice') && !finished && <Tally trials={trials} live={p?.name === 'present_choice'} name={id => catalog.get(id)?.name ?? id} />}
       {p?.name === 'present_choice' && (
         <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, { ...(result as object), trials_so_far: trials.length + 1 }) }} />
       )}
@@ -100,10 +102,10 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
       {!guess && <p><strong>Carer first:</strong> which will they pick?</p>}
       {guess && chosen === undefined && <p>Now let them choose. Tap the one they reach for, look at, or ask for.</p>}
       <div className={`cards n${cards.length}`}>
-        {cards.map(c => (
-          <button key={c.id} className={`card ${chosen === c.id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== c.id}
+        {cards.map((c, k) => (
+          <button key={c.id} style={{ '--i': k } as CSSProperties} className={`card ${chosen === c.id ? 'on' : ''}`} disabled={chosen !== undefined && chosen !== c.id}
             onClick={() => { if (!guess) setGuess(c.id); else if (chosen === undefined) { setChosen(c.id); start.current = Date.now() } }}>
-            <CardFace c={c} />{guess === c.id && <small>carer's guess</small>}
+            <CardFace c={c} />{guess === c.id && <small>carer's guess</small>}{chosen === c.id && <Burst />}
           </button>
         ))}
       </div>
@@ -113,8 +115,8 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
       </div>}
       {show && <ChildScreen cards={cards} onPick={id => { setChosen(id); start.current = Date.now() }} onClose={() => setShow(false)} />}
       {chosen && <>
-        <p className="timer">Engaged: {secs}s</p>
-        <div className="chips">{REACTIONS.map(r => <button key={r} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}>{r}</button>)}</div>
+        <p className="timer"><span className="beat" aria-hidden />Engaged: {secs}s</p>
+        <div className="chips">{REACTIONS.map(r => <button key={r} data-tone={POSITIVE.has(r) ? 'up' : 'down'} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}><ReactionIcon r={r} />{r}</button>)}</div>
       </>}
       {chosen !== undefined && <button onClick={() => {
         const t: Trial = { shown: cards.map(c => c.id), chosen: chosen ?? null, carerGuess: guess, engagementMs: chosen ? Date.now() - start.current : 0, reactions }
@@ -149,17 +151,18 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
   })
   return (
     <div className="finish">
-      {confirmed.length > 0 && <p className="win">New favourite found: {confirmed.map(name).join(', ')}</p>}
+      {confirmed.length > 0 && <p className="win"><Burst n={14} />New favourite found: {confirmed.map(name).join(', ')}</p>}
       <p>{data.summary.replace(/\*\*/g, '')}</p>
       {data.next_time && <p><strong>Next time:</strong> {data.next_time.replace(/\*\*/g, '')}</p>}
       <p className="src">Shown by choice: {trials.filter(t => t.chosen).length} choices in {trials.length} trials. Carer guessed right {g.matched} of {g.total}.</p>
       <article className="love" aria-label="What I love">
+        <VoiceMark className="love-mark" />
         <h3>What I love</h3>
         <p className="src">From a choice session on {new Date().toLocaleDateString()}. Every line below was chosen by me, not guessed for me.</p>
         <div className="love-grid">
-          {[...confirmed, ...seeds.map(s => s.id), ...scored.map(s => s.id).filter(id => !confirmed.includes(id) && !seedIds.has(id))].map(id => {
+          {[...confirmed, ...seeds.map(s => s.id), ...scored.map(s => s.id).filter(id => !confirmed.includes(id) && !seedIds.has(id))].map((id, k) => {
             const s = scored.find(x => x.id === id)
-            return <div key={id} className="love-item"><CardFace c={catalog.get(id) ?? { id, name: id }} /><small>{confirmed.includes(id) ? 'New favourite' : seedIds.has(id) ? 'Already loved' : 'Chosen'}{s ? ` · picked ${s.chosen}×` : ''}</small></div>
+            return <div key={id} className="love-item" style={{ '--i': k } as CSSProperties}><CardFace c={catalog.get(id) ?? { id, name: id }} /><small>{confirmed.includes(id) ? 'New favourite' : seedIds.has(id) ? 'Already loved' : 'Chosen'}{s ? ` · picked ${s.chosen}×` : ''}</small></div>
           })}
         </div>
         {liked.length > 0 && <p>When I like something I may: {liked.join(', ')}.</p>}
@@ -173,11 +176,26 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
 }
 
 const HUES = [12, 28, 160, 200, 260, 330]
+const hue = (name: string) => HUES[[...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % HUES.length]
 /** Card picture, or a coloured tile with the first letter when Qloo has no image. */
 export function CardFace({ c }: { c: Card }) {
   if (c.image) return <><img src={c.image} alt="" />{c.name}</>
-  const h = HUES[[...c.name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % HUES.length]
-  return <><span className="tile" aria-hidden style={{ background: `hsl(${h} 70% 55%)` }}>{c.name.replace(/^(the|a)\s+/i, '').charAt(0).toUpperCase()}</span>{c.name}</>
+  return <><span className="tile" aria-hidden style={{ backgroundColor: `hsl(${hue(c.name)} 70% 55%)` }}>{c.name.replace(/^(the|a)\s+/i, '').charAt(0).toUpperCase()}</span>{c.name}</>
+}
+
+/** The session so far as a row of dots: each choice in the colour of what was chosen, a ring when nothing was. */
+export function Tally({ trials, total, live, name }: { trials: Trial[]; total?: number; live?: boolean; name: (id: string) => string }) {
+  const made = trials.filter(t => t.chosen).length
+  const rest = Math.max(0, (total ?? trials.length + (live ? 1 : 0)) - trials.length)
+  return (
+    <div className="tally">
+      <span className="tally-label" aria-hidden>Their voice so far</span>
+      <span className="tally-dots" role="img" aria-label={`${made} of ${trials.length} trials ended in a choice`}>
+        {trials.map((t, k) => <i key={k} className={t.chosen ? 'made' : 'none'} style={t.chosen ? { backgroundColor: `hsl(${hue(name(t.chosen))} 65% 52%)` } : undefined} />)}
+        {Array.from({ length: rest }, (_, k) => <i key={`r${k}`} className={k === 0 && (live || total) ? 'now' : 'todo'} />)}
+      </span>
+    </div>
+  )
 }
 
 /** Full-screen, text-light view the carer turns towards the child. A tap is the choice. */
@@ -187,10 +205,10 @@ export function ChildScreen({ cards, onPick, onClose }: { cards: Card[]; onPick:
   return createPortal(
     <div className="child" role="dialog" aria-modal="true" aria-label="Child view">
       <div className={`child-cards n${cards.length}`}>
-        {cards.map(c => (
-          <button key={c.id} className={`child-card ${picked === c.id ? 'picked' : picked ? 'gone' : ''}`} disabled={!!picked}
+        {cards.map((c, k) => (
+          <button key={c.id} style={{ '--i': k } as CSSProperties} className={`child-card ${picked === c.id ? 'picked' : picked ? 'gone' : ''}`} disabled={!!picked}
             onClick={() => { setPicked(c.id); onPick(c.id); setTimeout(onClose, 1400) }}>
-            <CardFace c={c} />
+            <CardFace c={c} />{picked === c.id && <Burst n={16} />}
           </button>
         ))}
       </div>
