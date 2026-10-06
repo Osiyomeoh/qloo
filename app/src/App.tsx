@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { SampleClient, KID_RATINGS, type Entity, type QlooClient } from './qloo/client'
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
+import { AgentView, type AgentTransport } from './AgentView'
 
 export const APP_NAME = 'Choices' // neutral working name until launch
 
-type Step = 'seed' | 'propose' | 'session' | 'profile'
+type Step = 'seed' | 'propose' | 'session' | 'profile' | 'agent'
 const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
 
-export default function App({ client = new SampleClient() as QlooClient }) {
+export default function App({ client = new SampleClient() as QlooClient, agent }: { client?: QlooClient; agent?: AgentTransport }) {
+  const [notes, setNotes] = useState('')
   const [step, setStep] = useState<Step>('seed')
   const [seeds, setSeeds] = useState<Entity[]>([])
   const [proposals, setProposals] = useState<Entity[]>([])
@@ -32,7 +34,14 @@ export default function App({ client = new SampleClient() as QlooClient }) {
         <h1>{APP_NAME}</h1>
         {client.mode === 'sample' && <p className="badge" role="status">Sample data — not live Qloo results</p>}
       </header>
-      {step === 'seed' && <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} onNext={propose} />}
+      {step === 'seed' && <>
+        <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} onNext={propose} />
+        <label className="notes">Anything the agent should know? (optional, no names)
+          <input aria-label="Notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. no loud audio; manages 2 cards" />
+        </label>
+        <button className="primary" onClick={() => setStep('agent')} disabled={!seeds.length}>Let the agent run a session</button>
+      </>}
+      {step === 'agent' && <AgentView seeds={seeds.map(s => ({ id: s.id, name: s.name, image: s.image }))} notes={notes} transport={agent} />}
       {step === 'propose' && (
         <section>
           <h2>Things to try</h2>
@@ -74,7 +83,7 @@ function SeedStep({ client, seeds, setSeeds, onNext }: { client: QlooClient; see
         <li key={h.id}><button className="link" onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
       ))}</ul>
       {seeds.length > 0 && <p>Favourites: {seeds.map(s => s.name).join(', ')}</p>}
-      <button onClick={onNext} disabled={!seeds.length}>Show things to try</button>
+      <button className="secondary" onClick={onNext} disabled={!seeds.length}>Manual: show things to try</button>
     </section>
   )
 }

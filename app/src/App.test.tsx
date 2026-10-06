@@ -13,7 +13,7 @@ describe('full flow on sample data', () => {
     await u.type(screen.getByLabelText('Title'), 'thomas')
     await u.click(screen.getByRole('button', { name: 'Find' }))
     await u.click(await screen.findByRole('button', { name: '+ Thomas & Friends' }))
-    await u.click(screen.getByRole('button', { name: 'Show things to try' }))
+    await u.click(screen.getByRole('button', { name: 'Manual: show things to try' }))
 
     expect(await screen.findByText('Things to try')).toBeTruthy()
     expect(screen.queryByText(/Mad Max/)).toBeNull() // R-rated filtered out

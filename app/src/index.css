@@ -21,3 +21,11 @@ input { font:inherit; padding:12px; border-radius:12px; border:1px solid var(--l
 .photo { display:block; padding:16px; border:2px dashed var(--line); border-radius:12px; margin-bottom:16px; }
 .photo input { margin-top:8px; }
 .card img { width:100%; max-height:120px; object-fit:cover; border-radius:8px; display:block; margin-bottom:8px; }
+.primary { width:100%; margin-top:12px; font-size:1.1rem; } .secondary { background:var(--card); color:var(--fg); margin-top:8px; }
+.notes { display:block; margin-top:16px; color:var(--muted); font-size:.9rem; }
+.trace { list-style:none; padding:0; margin:0 0 16px; font-size:.92rem; } .trace li { padding:6px 0; border-left:2px solid var(--line); padding-left:10px; margin-left:4px; }
+.trace .thought { color:var(--fg); } .trace .tool, .trace .result { color:var(--muted); font-family:ui-monospace, monospace; font-size:.82rem; }
+.trace .error { color:var(--accent); } .trace .ask { font-weight:600; } .trace .thinking { color:var(--muted); animation:pulse 1.2s infinite; }
+@keyframes pulse { 50% { opacity:.4 } } @media (prefers-reduced-motion: reduce) { .trace .thinking { animation:none } }
+.trial { border:2px solid var(--accent); border-radius:16px; padding:12px; margin:12px 0; } .why { font-weight:600; }
+.cards.n3, .cards.n4 { grid-template-columns:1fr 1fr; } .finish { border-top:2px solid var(--line); padding-top:12px; }
