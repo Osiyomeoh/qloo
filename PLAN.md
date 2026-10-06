@@ -51,3 +51,10 @@ Live URL opens in **sample mode** with no sign-up, then a "use live Qloo" switch
 
 ## Tests
 Unit tests on all `src/core`; privacy-guard test; fixture-based Qloo parser tests; one end-to-end session test; the benchmark is reproducible from a committed script.
+
+## Multiple entries (decided Oct 6)
+Rules allow several submissions if "substantially different"; one prize per project.
+- #1 this project (main effort, Oct 6–15 build, polish to Oct 29)
+- #2 Territory (film sales markets), Oct 16–21; #3 Away Day (club fanbase / tour and sponsor fit), Oct 22–25
+- Keys: 2 Qloo keys, each event-issued to the person who uses it (kit docs/API_ACCESS.md: individually attributable, never shared between teams). Each key holder is on that project's Devpost team. If in doubt, confirm with organizers.
+- Separate repos, demos, licenses and CLAIMS per entry. Shared code (proxy + allowlist, parser, eval tooling) is copied in, not hidden.
