@@ -7,7 +7,7 @@ import type { QlooClient } from '../qloo/client.js'
 import { KID_RATINGS } from '../qloo/client.js'
 import type { EntityType } from '../core/qlooRequest.js'
 
-const TYPES: EntityType[] = ['movie', 'tv_show', 'book', 'video_game', 'artist', 'podcast']
+const TYPES: EntityType[] = ['movie', 'tv_show', 'book', 'videogame', 'artist', 'podcast']
 
 export const SYSTEM = `You help a carer discover new things a person loves when the person cannot easily say what they like (for example a minimally verbal autistic child, an adult with aphasia, or someone with profound disabilities). The person shows preference by choosing.
 

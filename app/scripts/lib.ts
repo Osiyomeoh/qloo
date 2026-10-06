@@ -13,12 +13,16 @@ export function need(name: string): string {
   return v
 }
 
+// Retries rate limits (429) with backoff, then throws: a failed call must never be scored as "not found".
 async function qloo(op: string, p: URLSearchParams, key: string) {
   p.set('op', op)
-  const res = await proxyQloo(new URL(`https://local/api/qloo?${p}`), key)
-  const body = await res.json() as { error?: string }
-  if (!res.ok) throw new Error(body.error)
-  return body
+  for (let attempt = 0; ; attempt++) {
+    const res = await proxyQloo(new URL(`https://local/api/qloo?${p}`), key)
+    const body = await res.json() as { error?: string }
+    if (res.status === 429 && attempt < 4) { await new Promise(r => setTimeout(r, 1000 * 2 ** attempt)); continue }
+    if (!res.ok) throw new Error(body.error)
+    return body
+  }
 }
 
 export async function search(title: string, key: string, type?: EntityType): Promise<Entity[]> {

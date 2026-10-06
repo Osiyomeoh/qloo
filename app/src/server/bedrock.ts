@@ -6,8 +6,8 @@ import { AnthropicBedrock } from '@anthropic-ai/bedrock-sdk'
 export type BedrockEnv = { AWS_REGION?: string; BEDROCK_AGENT_MODEL?: string; BEDROCK_VISION_MODEL?: string }
 
 // Bedrock model / inference-profile IDs. Overridable because IDs vary by region and account access.
-export const DEFAULT_AGENT_MODEL = 'us.anthropic.claude-opus-5-5-v1:0'
-export const DEFAULT_VISION_MODEL = 'us.anthropic.claude-sonnet-5-5-v1:0'
+export const DEFAULT_AGENT_MODEL = 'us.anthropic.claude-sonnet-4-6'
+export const DEFAULT_VISION_MODEL = 'us.anthropic.claude-sonnet-4-6'
 
 export type Create = (body: Record<string, unknown>) => Promise<{ content: any[]; stop_reason: string }>
 

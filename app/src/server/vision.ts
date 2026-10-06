@@ -1,8 +1,8 @@
 // Photo → list of cultural item names, for the carer to confirm. The photo is
 // sent only to the vision model, never to Qloo, and is not stored.
 import { DEFAULT_VISION_MODEL, type Create } from './bedrock.js'
-const PROMPT = 'List the titles of films, TV shows, books, video games, music artists or characters visible in this photo (covers, boxes, toys, posters). Reply with JSON only: {"items":[{"title":string,"kind":"movie"|"tv_show"|"book"|"video_game"|"artist"|"character"}]}. Do not describe any person. If none, return {"items":[]}.'
-const KINDS = new Set(['movie', 'tv_show', 'book', 'video_game', 'artist', 'character'])
+const PROMPT = 'List the titles of films, TV shows, books, video games, music artists or characters visible in this photo (covers, boxes, toys, posters). Reply with JSON only: {"items":[{"title":string,"kind":"movie"|"tv_show"|"book"|"videogame"|"artist"|"character"}]}. Do not describe any person. If none, return {"items":[]}.'
+const KINDS = new Set(['movie', 'tv_show', 'book', 'videogame', 'artist', 'character'])
 const MAX_BYTES = 5 * 1024 * 1024
 const MEDIA = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 

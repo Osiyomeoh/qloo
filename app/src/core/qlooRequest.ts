@@ -3,7 +3,7 @@
 
 export type EntityType =
   | 'artist' | 'book' | 'brand' | 'movie' | 'person' | 'place'
-  | 'podcast' | 'tv_show' | 'video_game'
+  | 'podcast' | 'tv_show' | 'videogame'
 
 export interface InsightsInput {
   type: EntityType

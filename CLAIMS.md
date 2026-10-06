@@ -11,10 +11,10 @@ Every public claim must map to code, a test, or a measurement. Status is updated
 | Learns from choices (chosen → signal, rejected → excluded) | `nextSignals` + test | built (logic); live Qloo planned |
 | Photo → items (vision model lists titles; carer confirms; photo never sent to Qloo, not stored) | `src/server/vision.ts` + tests (model mocked) | built; untested on real photos |
 | Photo → items hit rate X% on our 20-photo set | `npm run eval:photos` + `src/eval/metrics.ts` (tested) | script built; needs Sam's 20 photos |
-| Qloo vs plain LLM: fewer invented/generic titles | `npm run benchmark` over `eval/seeds.json` (8 cases) | script built; needs Qloo key |
+| Qloo vs plain LLM: fewer invented/generic titles | `npm run benchmark` over `eval/seeds.json` (8 cases); `app/eval/results/benchmark-2026-10-06T08-08-42.json` | **run 2026-10-06 (Claude Sonnet 4.6 on Bedrock): not supported.** Qloo 0% unresolved vs LLM 0–30%, but the LLM's misses are mostly real titles under a different name ("Mitchells vs. the Machines", "Angelique Kidjo"), not inventions. Seed-tag overlap: LLM ≥ Qloo in 6 of 8 cases. Do not claim Qloo recommends better than an LLM |
 | Pilot: n caregivers, results | Pilot notes; "not a clinical study" | planned (Sam recruits) |
 
-| Agentic: the model chooses each step (Qloo calls, which cards, when to branch or stop) and the person's choices steer it | `app/src/agent/engine.ts`, `unspoken.ts`; tests with a scripted model, incl. full UI → handler → loop | built; **not yet run with the real model** (Claude via AWS Bedrock; needs AWS_REGION + AWS credentials; default Bedrock model IDs unverified, overridable via BEDROCK_AGENT_MODEL / BEDROCK_VISION_MODEL) |
+| Agentic: the model chooses each step (Qloo calls, which cards, when to branch or stop) and the person's choices steer it | `app/src/agent/engine.ts`, `unspoken.ts`; tests with a scripted model, incl. full UI → handler → loop | built; Bedrock access verified 2026-10-06 (only Sonnet 4.6 and Haiku 4.5 are enabled on the account, so the default is `us.anthropic.claude-sonnet-4-6`); the Unspoken agent itself not yet run end to end on the real model |
 | Agent cannot show invented items: card ids must come from the carer's seeds or a Qloo result | `present_choice.validate` + `knownIds` + test | built |
 | Agent budgets: max 16 model turns, 24 Qloo calls per session; one person-facing action at a time | `engine.ts` + tests | built |
 | UI only celebrates favourites the logged choices support | `AgentView.tsx` Finish + test | built |
