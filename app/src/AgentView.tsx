@@ -44,6 +44,16 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
     }
     return m
   }, [seeds, trace])
+  // ids from qloo_recommend (children's ratings filter applied); search hits can be anything and stay off the map
+  const recommended = useMemo(() => {
+    const ids = new Set<string>(); let last = ''
+    for (const t of trace) {
+      if (t.kind === 'tool') last = (t.data as { name?: string } | undefined)?.name ?? ''
+      const ents = (t.data as { entities?: Card[] } | undefined)?.entities
+      if (t.kind === 'result' && last === 'qloo_recommend' && Array.isArray(ents)) for (const e of ents) ids.add(e.id)
+    }
+    return ids
+  }, [trace])
 
   async function call(body: unknown) {
     setBusy(true); setError(undefined)
@@ -85,7 +95,7 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
         <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, { ...(result as object), trials_so_far: trials.length + 1 }) }} />
       )}
       {p?.name === 'ask_carer' && <AskCarer pending={p} onAnswer={a => respond(p, { answer: a })} />}
-      {finished && <Finish data={finished} trials={trials} catalog={catalog} seeds={seeds} stopped={!!stopped} />}
+      {finished && <Finish data={finished} trials={trials} catalog={catalog} recommended={recommended} seeds={seeds} stopped={!!stopped} />}
       {out?.done && !finished && <p>{out.done.reason === 'finished' ? out.done.text : 'Session limit reached.'}</p>}
     </section>
   )
@@ -139,7 +149,7 @@ function AskCarer({ pending, onAnswer }: { pending: Pending; onAnswer: (a: strin
   return <div className="trial"><p className="why">{question}</p><div className="chips">{options.map(o => <button key={o} onClick={() => onAnswer(o)}>{o}</button>)}</div></div>
 }
 
-function Finish({ data, trials, catalog, seeds, stopped }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; seeds: Card[]; stopped: boolean }) {
+function Finish({ data, trials, catalog, recommended, seeds, stopped }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; recommended: Set<string>; seeds: Card[]; stopped: boolean }) {
   // Only celebrate favourites the logged choices actually support (chosen at least once, not a seed).
   const seedIds = new Set(seeds.map(s => s.id))
   const scored = score(trials).filter(s => s.chosen > 0)
@@ -164,9 +174,9 @@ function Finish({ data, trials, catalog, seeds, stopped }: { data: { summary: st
   const world = useMemo(() => {
     const ent = (c: Card) => ({ id: c.id, name: c.name, image: c.image, tags: (c as Card & { tags?: string[] }).tags ?? [] })
     const shown = new Set(trials.flatMap(t => t.shown))
-    const related = [...catalog.values()].filter(c => !seeds.some(x => x.id === c.id)).sort((a, b) => Number(shown.has(b.id)) - Number(shown.has(a.id))).slice(0, 9)
+    const related = [...catalog.values()].filter(c => !seeds.some(x => x.id === c.id) && (shown.has(c.id) || recommended.has(c.id))).sort((a, b) => Number(shown.has(b.id)) - Number(shown.has(a.id))).slice(0, 9)
     return buildWorld(seeds.map(s => ent(catalog.get(s.id) ?? s)), related.map(ent), trials, past)
-  }, [catalog, seeds, trials, past])
+  }, [catalog, recommended, seeds, trials, past])
   return (
     <div className="finish">
       {confirmed.length > 0 && <p className="win"><Burst n={14} />New favourite found: {confirmed.map(name).join(', ')}</p>}

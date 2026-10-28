@@ -46,7 +46,7 @@ export class SampleClient implements QlooClient {
 export class LiveClient implements QlooClient {
   readonly mode = 'live' as const
   private f: typeof fetch
-  constructor(f: typeof fetch = (...a) => fetch(...a)) { this.f = f }
+  constructor(f: typeof fetch = (input, init) => fetch(input, init)) { this.f = f }
   private async get(p: URLSearchParams) {
     const res = await this.f(`/api/qloo?${p}`)
     const body = await res.json().catch(() => ({}))
