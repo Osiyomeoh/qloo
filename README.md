@@ -17,7 +17,8 @@ About 75% of autistic young people have at least one special interest, and the m
 3. **The carer guesses, then the child chooses.** The cards go full screen. The carer logs which one the child picked, how long they engaged and how they reacted (smile, reach, look away…).
 4. **The agent adapts.** It stays close to what won, branches across categories (show → book, game, music) through Qloo, or drops what isn't working. It stops after about 6 trials, once a new favourite is confirmed twice, or sooner if the child stops choosing or is upset. When a decision depends on something only the carer knows, it asks.
 5. **The result is a one-page profile in the child's voice**: *What I love*. Every line on it was chosen by the child, not guessed for them. It can be printed for school or a therapist.
-6. **A standard check.** A built-in MSWO assessment ranks the items by selection percentage over three rounds. Each assessment is saved on the device, so the trend over sessions shows.
+6. **Their world.** A map of the child's interests: their favourite in the middle, related shows around it, each as its cover picture. The lines and their labels come from Qloo (a tag the show shares with the favourite). The ring colour and the count come only from what the child chose: chosen again and again, chosen once, not chosen yet (not a dislike), or not tried yet. Under it, a one-page profile, *Meet me through my choices*, lists what they chose, what they keep coming back to across visits, what is still being explored, and what went less well, with a picture on every line.
+7. **A standard check.** A built-in MSWO assessment ranks the items by selection percentage over three rounds. Each assessment is saved on the device, so the trend over sessions shows.
 
 There is also a manual mode without the agent, and photo seeding: snap a shelf or a screen, a vision model reads the titles, and the carer confirms them. The photo is not stored and never goes to Qloo.
 
@@ -48,7 +49,7 @@ All of it is in [CLAIMS.md](CLAIMS.md), with the evidence for each claim. In sho
 ```sh
 cd app
 npm install
-npm test                 # 73 tests, no keys needed
+npm test                 # 91 tests, no keys needed
 npm run dev              # sample mode: clearly labelled sample data, no keys, no network
 ```
 
