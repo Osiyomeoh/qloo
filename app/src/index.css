@@ -6,15 +6,9 @@
   --shadow-lg: 0 2px 4px rgb(22 33 62 / .04), 0 24px 60px -20px rgb(37 99 235 / .3);
   --display: 'Nunito Variable', ui-rounded, system-ui, sans-serif; --sans: 'Inter Variable', system-ui, sans-serif;
   --gold: #e0a020; --indigo: #6d5ce8; --rose: #e0457f; --teal: #1f9bb4; --spring: cubic-bezier(.3, 1.5, .5, 1); --ease-out: cubic-bezier(.2, .8, .2, 1);
-  color-scheme: light dark; font-family: var(--sans); font-size: 16px; line-height: 1.5;
+  color-scheme: light; font-family: var(--sans); font-size: 16px; line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-@media (prefers-color-scheme: dark) { :root {
-  --bg: #0b1220; --bg-2: #111a2e; --surface: #121b2e; --ink: #e8eefc; --muted: #9aa6c2; --line: #23304d;
-  --accent: #2f66e0; --accent-ink: #8db6ff; --accent-soft: #16223d; --pink: #ff7eb3; --pink-soft: #2a1424;
-  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 32px -12px rgb(0 0 0 / .6); --shadow-lg: 0 24px 60px -20px rgb(0 0 0 / .7);
-  --gold: #f2c14e; --indigo: #9d8ff5; --rose: #ff7eb3; --teal: #5cc3d6;
-} }
 * { box-sizing: border-box; }
 html { overflow-x: clip; }
 body { margin: 0; background: var(--bg); color: var(--ink); min-height: 100vh; }
@@ -85,7 +79,7 @@ button.secondary { background: var(--surface); color: var(--ink); border-color: 
 button.secondary:not(:disabled):hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
 button.link { background: none; color: var(--accent-ink); border: none; padding: 8px 2px; min-height: 0; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
 button.link:not(:disabled):hover { transform: none; text-decoration-color: currentColor; }
-button.manual { display: block; margin: 12px auto 0; font-size: .9rem; color: var(--muted); }
+button.manual { display: block; min-height: 44px; margin: 8px auto 0; font-size: .9rem; color: var(--muted); }
 input { font: inherit; width: 100%; padding: 13px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); transition: border-color .15s, box-shadow .15s, background .15s; }
 input:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
 input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
@@ -169,7 +163,7 @@ input::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
 .card.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
 .card:disabled:not(.on) { opacity: .35; }
 .card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; display: block; background: var(--bg-2); }
-.card small { position: absolute; top: 18px; left: 18px; background: var(--ink); color: var(--bg); padding: 4px 10px; border-radius: 999px; font-size: .72rem; font-weight: 650; }
+.card small { position: absolute; bottom: 14px; left: 14px; background: var(--ink); color: var(--bg); padding: 4px 10px; border-radius: 999px; font-size: .72rem; font-weight: 650; }
 .tile { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; color: #fff; font-family: var(--display); font-size: 3.4rem; font-weight: 800; text-shadow: 0 2px 12px rgb(0 0 0 / .15);
   background-image: radial-gradient(circle at 78% 18%, rgb(255 255 255 / .35), transparent 38%), radial-gradient(rgb(255 255 255 / .16) 1.4px, transparent 1.6px); background-size: auto, 14px 14px; }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }

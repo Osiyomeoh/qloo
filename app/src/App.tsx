@@ -81,7 +81,7 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
         <section>
           <h2>Things to try</h2>
           <p className="src">{SOURCE_LABEL.qloo}: related to {seeds.map(s => s.name).join(', ')}. Age-rated.</p>
-          <ul className="list">{proposals.map(p => <li key={p.id}>{p.name} <small>{p.tags.join(' · ')}</small></li>)}</ul>
+          <ul className="list">{proposals.map(p => <li key={p.id}>{p.name} <small>{[...new Set(p.tags)].slice(0, 3).join(' · ')}</small></li>)}</ul>
           <button onClick={() => setStep('session')} disabled={!proposals.length}>Start a choice session</button>
         </section>
       )}
