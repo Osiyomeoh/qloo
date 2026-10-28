@@ -10,8 +10,10 @@ const MAX = 20
 export function loadHistory(): SessionRecord[] {
   try { const v = JSON.parse(localStorage.getItem(KEY) ?? '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
 }
-export function saveSession(r: SessionRecord): SessionRecord[] {
-  const next = [...loadHistory(), r].slice(-MAX)
+/** replaceLast: a later round of the same visit updates that visit's record instead of adding a session. */
+export function saveSession(r: SessionRecord, replaceLast = false): SessionRecord[] {
+  const h = loadHistory()
+  const next = [...(replaceLast ? h.slice(0, -1) : h), r].slice(-MAX)
   try { localStorage.setItem(KEY, JSON.stringify(next)) } catch { /* private mode: keep going without memory */ }
   return next
 }

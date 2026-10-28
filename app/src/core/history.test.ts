@@ -31,3 +31,12 @@ describe('history', () => {
     expect(b).toContain('Moana'); expect(b).toContain('never chosen: Cars')
   })
 })
+
+describe('saveSession replaceLast', () => {
+  it('updates the visit record instead of adding a session', () => {
+    localStorage.clear()
+    const r = (d: string) => ({ date: d, favourites: [], chosen: [], neverChosen: [] })
+    saveSession(r('a')); saveSession(r('b')); saveSession(r('c'), true)
+    expect(loadHistory().map(x => x.date)).toEqual(['a', 'c'])
+  })
+})

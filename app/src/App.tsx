@@ -4,10 +4,12 @@ import { KID_TYPES, TYPE_LABEL, favouriteHits, recommendForKids } from './core/k
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, Tally, type AgentTransport } from './AgentView'
-import { loadHistory, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
+import { loadHistory, saveSession, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
 import { Burst, ChoiceOverlay, POSITIVE, ReactionIcon } from './Art'
 import { Board, BOARD_MAX } from './Board'
 import { EVIDENCE } from './evidence'
+import { buildWorld } from './core/world'
+import { Passport, Universe } from './World'
 
 export const APP_NAME = 'Unspoken'
 
@@ -22,6 +24,9 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
   const [seeds, setSeeds] = useState<Entity[]>([])
   const [proposals, setProposals] = useState<Entity[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
+  // history from before this visit; every round of this visit is one session record
+  const [past] = useState(loadHistory)
+  const savedThisVisit = useRef(false)
   const [demo] = useState(() => DEMO_SEEDS[new URLSearchParams(window.location.search).get('demo') ?? ''])
   useEffect(() => {
     if (!demo) return
@@ -89,15 +94,22 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
         <Session
           ids={[seeds[0].id, ...proposals.slice(0, 3).map(p => p.id)]}
           byId={byId}
-          onDone={t => { setTrials(prev => [...prev, ...t]); setStep('profile') }}
+          onDone={t => { saveManual(seeds, byId, [...trials, ...t], savedThisVisit.current); savedThisVisit.current = true; setTrials(prev => [...prev, ...t]); setStep('profile') }}
         />
       )}
       {step === 'profile' && (
-        <Profile all={all} trials={trials} onMore={propose} />
+        <Profile seeds={seeds} all={all} trials={trials} past={past} onMore={propose} />
       )}
       </main>
     </>
   )
+}
+
+/** Manual sessions go into the same on-device history as agent sessions, so "keep coming back to" can fill up. */
+function saveManual(seeds: Entity[], byId: Map<string, Entity>, trials: Trial[], replaceLast: boolean) {
+  const item = (id: string) => { const e = byId.get(id); return { id, name: e?.name ?? id, ...(e?.image ? { image: e.image } : {}) } }
+  const s = score(trials)
+  saveSession({ date: new Date().toISOString(), favourites: [...seeds.map(e => e.id), ...s.filter(x => x.chosen >= 2 && !seeds.some(e => e.id === x.id)).map(x => x.id)].map(item), chosen: s.filter(x => x.chosen > 0).map(x => item(x.id)), neverChosen: s.filter(x => x.shown >= 2 && x.chosen === 0).map(x => item(x.id)) }, replaceLast)
 }
 
 /** Two cards, one chosen: the whole method in a mark. */
@@ -273,18 +285,22 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
   )
 }
 
-function Profile({ all, trials, onMore }: { all: Entity[]; trials: Trial[]; onMore: () => void }) {
+function Profile({ seeds, all, trials, past, onMore }: { seeds: Entity[]; all: Entity[]; trials: Trial[]; past: SessionRecord[]; onMore: () => void }) {
   const items = all.map(e => ({ id: e.id, title: e.name, source: 'qloo' as const }))
   const tags = Object.fromEntries(all.filter(e => score(trials).some(s => s.id === e.id && s.chosen > 0)).map(e => [e.id, e.tags]))
   const lines = buildProfile(items, trials, tags)
   const g = guessAccuracy(trials)
   const top = score(trials)[0]
-  const seedIds = new Set(all.slice(0, 1).map(e => e.id))
+  const seedIds = new Set(seeds.map(e => e.id))
+  const nodes = buildWorld(seeds, all, trials, past)
   return (
     <section>
       {top && !seedIds.has(top.id) && top.chosen > 0 && <p className="win"><Burst n={14} />New favourite found: {all.find(e => e.id === top.id)?.name}</p>}
-      <h2>One-page profile</h2>
-      <ul className="list">{lines.map((l, k) => <li key={k}><span className={`tag ${l.source}`}>{SOURCE_LABEL[l.source]}</span> {l.text}</li>)}</ul>
+      <h2>Their world</h2>
+      <Universe nodes={nodes} />
+      <Passport nodes={nodes} date={new Date().toLocaleDateString()}>
+        <ul className="list">{lines.map((l, k) => <li key={k}><span className={`tag ${l.source}`}>{SOURCE_LABEL[l.source]}</span> {l.text}</li>)}</ul>
+      </Passport>
       <p>Carer guessed right {g.matched} of {g.total} times.</p>
       <button onClick={() => window.print()}>Print / save</button>{' '}
       <button onClick={onMore}>Find more to try</button>

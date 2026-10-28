@@ -11,6 +11,8 @@ import { inline, prose } from './prose'
 import { Board, PrintCards, BOARD_MAX } from './Board'
 import { printCards, sentence } from './say'
 import { EVIDENCE } from './evidence'
+import { buildWorld } from './core/world'
+import { Universe } from './World'
 
 export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; sig?: string; error?: string }>
 
@@ -158,9 +160,18 @@ function Finish({ data, trials, catalog, seeds, stopped }: { data: { summary: st
     const all = score(trials)
     saveSession({ date: new Date().toISOString(), favourites: [...confirmed, ...seeds.map(s => s.id)].map(item), chosen: scored.map(s => item(s.id)), neverChosen: all.filter(s => s.shown >= 2 && s.chosen === 0).map(s => item(s.id)) })
   })
+  const [past] = useState(loadHistory)
+  const world = useMemo(() => {
+    const ent = (c: Card) => ({ id: c.id, name: c.name, image: c.image, tags: (c as Card & { tags?: string[] }).tags ?? [] })
+    const shown = new Set(trials.flatMap(t => t.shown))
+    const related = [...catalog.values()].filter(c => !seeds.some(x => x.id === c.id)).sort((a, b) => Number(shown.has(b.id)) - Number(shown.has(a.id))).slice(0, 9)
+    return buildWorld(seeds.map(s => ent(catalog.get(s.id) ?? s)), related.map(ent), trials, past)
+  }, [catalog, seeds, trials, past])
   return (
     <div className="finish">
       {confirmed.length > 0 && <p className="win"><Burst n={14} />New favourite found: {confirmed.map(name).join(', ')}</p>}
+      <h3>Their world</h3>
+      <Universe nodes={world} />
       <div className="summary">{prose(data.summary)}</div>
       {data.next_time && <p><strong>Next time:</strong> {inline(data.next_time)}</p>}
       <p className="src">Shown by choice: {trials.filter(t => t.chosen).length} choices in {trials.length} trials. Carer guessed right {g.matched} of {g.total}.</p>
