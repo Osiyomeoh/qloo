@@ -5,7 +5,7 @@ import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type 
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, Tally, type AgentTransport } from './AgentView'
 import { loadHistory, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
-import { Burst, HeroArt, POSITIVE, ReactionIcon } from './Art'
+import { Burst, ChoiceOverlay, POSITIVE, ReactionIcon } from './Art'
 import { Board, BOARD_MAX } from './Board'
 import { EVIDENCE } from './evidence'
 
@@ -61,7 +61,7 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
           <h1>Find what they love, <em>by letting them choose.</em></h1>
           <p className="pitch">An agent picks a few things to show, you log which one they reach for, and it learns from every choice.</p>
         </header>
-        <HeroArt />
+        <HeroPhoto />
         <div className="panel">
           {demo && seeds.some(s => s.name === demo) && <p className="demo-note">Demo: <b>{demo}</b> is in as their favourite. Play both parts: guess as the carer, then pick as the child.</p>}
           <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} />
@@ -73,14 +73,9 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
         </div>
         <div className="hero-more">
           <ol className="how"><li><b>1</b><span>Name one thing they already love</span></li><li><b>2</b><span>The agent picks 2–4 things to show</span></li><li><b>3</b><span>Their choices become a one-page profile</span></li></ol>
-          <ul className="trust">
-            <li><TrustIcon d="M7 11V8a5 5 0 0 1 10 0v3M5.5 11h13v9h-13z" /><strong>Only titles go to Qloo</strong>Nothing about the child is sent, only the name of a show, film or book.</li>
-            <li><TrustIcon d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.5a6 6 0 0 1-5-2.7L4 14.5a1.5 1.5 0 0 1 2.5-1.7L9 15" /><strong>Chosen, not guessed</strong>A favourite only counts when the child picked it.</li>
-            <li><TrustIcon d="M8 4.5h8M9 3h6v3H9zM6 4.5H5v16h14v-16h-1M8.5 13l2.5 2.5 4.5-5" /><strong>A standard method</strong>Confirm with MSWO, a published preference assessment.</li>
-          </ul>
         </div>
       </div>}
-      {step === 'seed' && <Research />}
+      {step === 'seed' && <><Carers /><Research /></>}
       {step === 'agent' && <AgentView seeds={seeds.map(s => ({ id: s.id, name: s.name, image: s.image }))} notes={notes} transport={agent} />}
       {step === 'propose' && (
         <section>
@@ -107,7 +102,42 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
 
 /** Two cards, one chosen: the whole method in a mark. */
 function Logo() {
-  return <svg className="logo" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--accent)" /><rect className="lg-other" x="6" y="9" width="9" height="14" rx="2.5" fill="#fff" opacity=".45" /><rect className="lg-pick" x="17" y="7" width="9" height="16" rx="2.5" fill="#fff" /><circle className="lg-dot" cx="21.5" cy="26" r="1.6" fill="#fff" /></svg>
+  return <svg className="logo" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="9" fill="var(--accent)" /><rect className="lg-other" x="6" y="9" width="9" height="14" rx="2.5" fill="#fff" opacity=".45" /><rect className="lg-pick" x="17" y="7" width="9" height="16" rx="2.5" fill="#fff" /><circle className="lg-dot" cx="21.5" cy="26" r="1.8" fill="var(--logo-dot)" /></svg>
+}
+
+/** Stock photos from Unsplash, credited under each. They are not people using Unspoken. */
+const Credit = ({ by, href }: { by: string; href: string }) => <figcaption className="credit">Stock photo by <a href={href} target="_blank" rel="noreferrer">{by}</a> on Unsplash</figcaption>
+
+function HeroPhoto() {
+  return (
+    <figure className="hero-photo">
+      <div className="hp-frame">
+        <img src="/photos/family.webp" width={1400} height={929} fetchPriority="high" alt="A woman on a sofa with two young children, smiling down at them" />
+        <ChoiceOverlay />
+      </div>
+      <Credit by="Trust “Tru” Katsande" href="https://unsplash.com/photos/jv8SELgSKAs" />
+    </figure>
+  )
+}
+
+function Carers() {
+  return (
+    <section className="carers" aria-label="For carers">
+      <figure>
+        <img src="/photos/carer.webp" width={900} height={1350} loading="lazy" alt="A man in an orange top hugging a laughing young girl outdoors" />
+        <Credit by="Mieke Campbell" href="https://unsplash.com/photos/Q6DmZLEejkE" />
+      </figure>
+      <div>
+        <h2>For the people who know them best</h2>
+        <p className="carers-lede">Parents, grandparents, teachers and therapists already watch for what a child reaches for. Unspoken turns that into short choice sessions, a record of every pick, and a profile you can print and share.</p>
+        <ul className="trust">
+          <li><TrustIcon d="M7 11V8a5 5 0 0 1 10 0v3M5.5 11h13v9h-13z" /><strong>Only titles go to Qloo</strong>Nothing about the child is sent, only the name of a show, film or book.</li>
+          <li><TrustIcon d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.5a6 6 0 0 1-5-2.7L4 14.5a1.5 1.5 0 0 1 2.5-1.7L9 15" /><strong>Chosen, not guessed</strong>A favourite only counts when the child picked it.</li>
+          <li><TrustIcon d="M8 4.5h8M9 3h6v3H9zM6 4.5H5v16h14v-16h-1M8.5 13l2.5 2.5 4.5-5" /><strong>A standard method</strong>Confirm with MSWO, a published preference assessment.</li>
+        </ul>
+      </div>
+    </section>
+  )
 }
 
 const TrustIcon = ({ d }: { d: string }) => <svg className="trust-icon" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
@@ -281,7 +311,7 @@ function LastTime({ seeds, setSeeds }: { seeds: Entity[]; setSeeds: (s: Entity[]
   )
 }
 
-const LINE = ['#c2410c', '#0f766e', '#7c3aed', '#2563eb', '#be185d', '#65a30d']
+const LINE = ['#2563eb', '#be185d', '#0f766e', '#7c3aed', '#c2410c', '#65a30d']
 /** Selection % per item across assessed sessions. Only measured points are drawn; gaps stay gaps. */
 export function Trend({ h }: { h: SessionRecord[] }) {
   const { dates, items } = mswoSeries(h)
