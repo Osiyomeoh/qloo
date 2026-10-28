@@ -4,7 +4,7 @@
 import { buildInsightsParams, buildSearchParams, type EntityType } from '../core/qlooRequest.js'
 import { parseEntities } from './parse.js'
 
-export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string; image?: string; popularity?: number }
+export interface Entity { id: string; name: string; type: EntityType; tags: string[]; rating?: string; year?: number; image?: string; popularity?: number }
 
 export interface QlooClient {
   readonly mode: 'sample' | 'live'

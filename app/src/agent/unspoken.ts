@@ -5,6 +5,7 @@ import type { ClientTool, ServerTool, Msg } from './engine.js'
 import type { QlooClient } from '../qloo/client.js'
 import type { EntityType } from '../core/qlooRequest.js'
 import { KID_TYPES, recommendForKids } from '../core/kids.js'
+import { stopReason, type Reaction } from '../core/session.js'
 
 const TYPES = KID_TYPES
 
@@ -14,7 +15,7 @@ How you work (based on published preference-assessment methods):
 - Use qloo_search to resolve titles and qloo_recommend to find candidates related to items the person has chosen. Qloo describes items, never the person.
 - Run choices with present_choice: 2 cards by default (paired choice), up to 4 if the carer says the person handles more. Put one proven favourite in early sessions so the person experiences success.
 - After each trial, decide what to do next and say why in one short sentence: stay close to what won, branch to another entity type (show → book, game, music) that shares the winner's tags, or drop a direction the person keeps rejecting (pass those ids as exclude).
-- Stop and call finish when: the person stops choosing twice in a row, a negative reaction (push-away, distress) appears twice, you have run about 6 trials, or you found at least one new favourite confirmed twice.
+- Stop and call finish when: the person stops choosing twice in a row, a negative reaction (push-away, distress) appears twice, you have run about 6 trials, or you found at least one new favourite confirmed twice. The first two are enforced: present_choice is refused after them.
 - Only show items whose ids came from the carer's seeds or from qloo_recommend, which returns only items suitable for children. A qloo_search result can be a seed for qloo_recommend but is not shown itself. Never invent titles.
 - Use ask_carer only when an answer changes your next step (e.g. two plausible matches for a title, or whether loud audio is ok).
 
@@ -67,6 +68,8 @@ export function unspokenTools(qloo: QlooClient): { server: ServerTool[]; client:
         const items = (input as { items?: { id: string }[] }).items
         if (!Array.isArray(items) || items.length < 2 || items.length > 4) return 'items must have 2 to 4 entries'
         if (new Set(items.map(i => i.id)).size !== items.length) return 'items must be distinct'
+        const stop = stopReason(loggedTrials(messages))
+        if (stop) return `stop rule: ${stop.toLowerCase()}. Show no more cards. Call finish now, and tell the carer kindly that stopping was right`
         const known = cardIds(messages)
         const unknown = items.filter(i => !known.has(i.id))
         return unknown.length ? `these ids are not the carer's seeds or qloo_recommend results: ${unknown.map(i => i.id).join(', ')}. Only those can be shown; use qloo_recommend first.` : null
@@ -108,21 +111,28 @@ export function cardIds(messages: Msg[]): Set<string> {
   return ids
 }
 
-/** How often each id was chosen, read from the logged present_choice results (not from the model's own account). */
-export function choiceCounts(messages: Msg[]): Map<string, number> {
-  const uses = new Map<string, string>(), n = new Map<string, number>()
+/** The person's trials as logged by present_choice results (not the model's own account). */
+export function loggedTrials(messages: Msg[]): { chosen: string | null; reactions: Reaction[] }[] {
+  const uses = new Map<string, string>(), out: { chosen: string | null; reactions: Reaction[] }[] = []
   for (const m of messages) {
     if (typeof m.content === 'string') continue
     for (const b of m.content) {
       if (b.type === 'tool_use') uses.set(b.id, b.name)
-      if (b.type === 'tool_result' && uses.get(b.tool_use_id) === 'present_choice') {
+      if (b.type === 'tool_result' && !b.is_error && uses.get(b.tool_use_id) === 'present_choice') {
         try {
-          const r = JSON.parse(typeof b.content === 'string' ? b.content : JSON.stringify(b.content)) as { chosen_id?: string | null }
-          if (r.chosen_id) n.set(r.chosen_id, (n.get(r.chosen_id) ?? 0) + 1)
+          const r = JSON.parse(typeof b.content === 'string' ? b.content : JSON.stringify(b.content)) as { chosen_id?: string | null; reactions?: unknown }
+          out.push({ chosen: r.chosen_id ?? null, reactions: Array.isArray(r.reactions) ? r.reactions : [] })
         } catch { /* not a choice result */ }
       }
     }
   }
+  return out
+}
+
+/** How often each id was chosen, read from the logged present_choice results. */
+export function choiceCounts(messages: Msg[]): Map<string, number> {
+  const n = new Map<string, number>()
+  for (const t of loggedTrials(messages)) if (t.chosen) n.set(t.chosen, (n.get(t.chosen) ?? 0) + 1)
   return n
 }
 

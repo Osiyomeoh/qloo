@@ -12,6 +12,23 @@ export const KID_RATINGS = ['G', 'PG', 'TV-Y', 'TV-Y7', 'TV-G']
 export const KID_GAME_RATINGS = ['E', 'E10+']
 export const KID_TAGS: Partial<Record<EntityType, string>> = { book: 'urn:tag:genre:media:childrens', artist: 'urn:tag:genre:music:children' }
 export const KID_TYPES: EntityType[] = ['movie', 'tv_show', 'book', 'videogame', 'artist']
+export const TYPE_LABEL: Partial<Record<EntityType, string>> = { tv_show: 'TV show', movie: 'Film', book: 'Book', videogame: 'Game', artist: 'Music' }
+
+/** Rated for adults (film, TV, ESRB). Unrated is kept: a favourite is what the carer says the child already loves. */
+const ADULT_RATINGS = ['R', 'NC-17', 'TV-MA', 'M', 'AO']
+
+/** Search hits a carer can add as a favourite. Qloo's search also returns places, brands, albums and podcasts
+ *  under the same name ("Ms Rachel" gave a supermarket and a news podcast), and "Frozen" gave a 2010 R-rated film
+ *  too. A favourite can become a card, so keep only what a child can be shown, once per name, kind and year, at most 5. */
+export function favouriteHits(hits: Entity[]): Entity[] {
+  const seen = new Set<string>()
+  return hits.filter(h => {
+    const key = `${h.type}|${h.name.toLowerCase()}|${h.year ?? ''}`
+    if (!KID_TYPES.includes(h.type) || (h.rating && ADULT_RATINGS.includes(h.rating)) || seen.has(key)) return false
+    seen.add(key)
+    return true
+  }).slice(0, 5)
+}
 
 /** For results of a kids query: film, TV and games by rating; books and music were filtered by tag at Qloo. */
 export function suitableForChildren(e: Entity): boolean {

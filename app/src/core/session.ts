@@ -70,3 +70,12 @@ export function nextSignals(trials: Trial[], minShownToExclude = 2) {
     exclude: s.filter(x => x.chosen === 0 && x.shown >= minShownToExclude).map(x => x.id),
   }
 }
+
+/** The method's stop rule, enforced in code: the person stopped choosing twice in a row, or pushed away
+ * or showed distress on two trials. Stopping is a result, not a failure. */
+export function stopReason(trials: Pick<Trial, 'chosen' | 'reactions'>[]): string | null {
+  const last = trials.slice(-2)
+  if (last.length === 2 && last.every(t => t.chosen === null)) return 'They stopped choosing twice in a row'
+  if (trials.filter(t => t.reactions?.some(r => r === 'push-away' || r === 'distress')).length >= 2) return 'They pushed away or were upset twice'
+  return null
+}

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // Full stack except the network and the model: real UI → real handler → real agent loop → sample Qloo.
-import { afterEach, describe, it, expect } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
@@ -11,7 +11,7 @@ const use = (id: string, name: string, input: unknown): Block => ({ type: 'tool_
 const turn = (...content: Block[]): ModelReply => ({ content, stop_reason: 'tool_use' })
 
 describe('agent session in the app', () => {
-  afterEach(() => { cleanup(); localStorage.clear() })
+  afterEach(() => { cleanup(); localStorage.clear(); vi.unstubAllGlobals() })
   it('agent reasons, calls Qloo, runs choices with the person, adapts, and celebrates only supported favourites', async () => {
     const script: ModelReply[] = [
       turn({ type: 'text', text: 'Start next to trains.' }, use('a', 'qloo_recommend', { type: 'tv_show', seed_ids: ['sample-0001'] })),
@@ -29,7 +29,7 @@ describe('agent session in the app', () => {
     render(<App agent={transport} />)
     await u.type(screen.getByLabelText('Title'), 'thomas')
     await u.click(screen.getByRole('button', { name: 'Find' }))
-    await u.click(await screen.findByRole('button', { name: '+ Thomas & Friends' }))
+    await u.click(await screen.findByRole('button', { name: /^\+ Thomas & Friends/ }))
     await u.type(screen.getByLabelText('Notes'), 'no loud audio')
     await u.click(screen.getByRole('button', { name: 'Let the agent run a session' }))
 
@@ -67,16 +67,68 @@ describe('agent session in the app', () => {
     expect(within(love).getByText(/New favourite · picked 2×/)).toBeTruthy()
     expect(within(love).getByText(/Already loved/)).toBeTruthy()
 
+    // their board: they tap a picture and the device says it
+    const spoken: string[] = []
+    vi.stubGlobal('SpeechSynthesisUtterance', class { text: string; voice = null; rate = 1; constructor(t: string) { this.text = t } })
+    vi.stubGlobal('speechSynthesis', { getVoices: () => [], cancel() {}, speak: (u: { text: string }) => spoken.push(u.text) })
+    await u.click(screen.getByRole('button', { name: 'Open their board' }))
+    const board = screen.getByRole('dialog', { name: 'Their board' })
+    expect(within(board).getAllByRole('button', { name: /Chuggington|Thomas/ }).length).toBe(2)
+    await u.click(within(board).getByRole('button', { name: /Chuggington/ }))
+    expect(spoken).toEqual(['I want Chuggington'])
+    expect(within(board).getByText('I want Chuggington')).toBeTruthy()
+    await u.click(within(board).getByRole('button', { name: 'Back to carer view' }))
+
     // the session is remembered on this device and offered next time
     cleanup()
     render(<App agent={transport} />)
     const last = screen.getByLabelText('Last time')
     expect(within(last).getByText(/Chuggington/)).toBeTruthy()
+    await u.click(within(last).getByRole('button', { name: 'Open their board' }))
+    await u.click(within(screen.getByRole('dialog', { name: 'Their board' })).getByRole('button', { name: /Thomas/ }))
+    expect(spoken.at(-1)).toBe('I want Thomas & Friends')
+    await u.click(screen.getByRole('button', { name: 'Back to carer view' }))
     await u.click(within(last).getByRole('button', { name: 'Start from last session' }))
     expect(screen.getByText(/Favourites: Chuggington, Thomas & Friends/)).toBeTruthy()
     await u.click(within(last).getByRole('button', { name: 'Forget' }))
     expect(screen.queryByLabelText('Last time')).toBeNull()
     expect(localStorage.getItem('unspoken.history.v1')).toBeNull()
+  })
+
+  it('stops in code when the person has had enough, and offers no more trials that day', async () => {
+    const script: ModelReply[] = [
+      turn(use('a', 'qloo_recommend', { type: 'tv_show', seed_ids: ['sample-0001'] })),
+      turn(use('b', 'present_choice', { items: [{ id: 'sample-0001', name: 'Thomas & Friends' }, { id: 'sample-0003', name: 'Chuggington' }], why: 'First pair.' })),
+      turn(use('c', 'present_choice', { items: [{ id: 'sample-0004', name: 'Blaze and the Monster Machines' }, { id: 'sample-0003', name: 'Chuggington' }], why: 'Second pair.' })),
+      // the model wants one more; the stop rule refuses it
+      turn(use('d', 'present_choice', { items: [{ id: 'sample-0001', name: 'Thomas & Friends' }, { id: 'sample-0004', name: 'Blaze and the Monster Machines' }], why: 'One more?' })),
+      turn(use('e', 'finish', { summary: 'They had enough today, so we stopped.', new_favourite_ids: [] })),
+    ]
+    const callModel: CallModel = async () => script.shift()!
+    const transport = async (body: unknown) => (await handleAgent(JSON.stringify(body), {}, { callModel })).json()
+    const u = userEvent.setup()
+    render(<App agent={transport} />)
+    await u.type(screen.getByLabelText('Title'), 'thomas')
+    await u.click(screen.getByRole('button', { name: 'Find' }))
+    await u.click(await screen.findByRole('button', { name: /^\+ Thomas & Friends/ }))
+    await u.click(screen.getByRole('button', { name: 'Let the agent run a session' }))
+    const noChoice = async (why: string, guess: RegExp, reaction?: string) => {
+      await screen.findByText(why, { selector: '.why' })
+      const trial = document.querySelector('.trial') as HTMLElement
+      await u.click(within(trial).getByRole('button', { name: guess }))
+      await u.click(within(trial).getByRole('button', { name: 'No choice' }))
+      if (reaction) await u.click(within(trial).getByRole('button', { name: reaction }))
+      await u.click(within(trial).getByRole('button', { name: 'Next' }))
+    }
+    await noChoice('First pair.', /Thomas/)
+    expect(screen.queryByText(/Stopped early/)).toBeNull()
+    await noChoice('Second pair.', /Blaze/, 'push-away')
+    expect(document.querySelector('.stopped')?.textContent).toMatch(/^Stopped early\. They stopped choosing twice in a row\. That's information too/)
+    expect(await screen.findByText('They had enough today, so we stopped.')).toBeTruthy()
+    expect(within(screen.getByRole('list', { name: 'Agent steps' })).getByText(/present_choice refused: stop rule/)).toBeTruthy()
+    expect(screen.queryByText('One more?')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Start assessment' })).toBeNull()
+    expect(screen.getByText('The preference assessment can wait for another day.')).toBeTruthy()
   })
 
   it('passes earlier sessions to the agent, capped and cleaned', async () => {
@@ -94,7 +146,7 @@ describe('agent session in the app', () => {
     render(<App agent={transport} />)
     await u.type(screen.getByLabelText('Title'), 'cars')
     await u.click(screen.getByRole('button', { name: 'Find' }))
-    await u.click(await screen.findByRole('button', { name: '+ Cars' }))
+    await u.click(await screen.findByRole('button', { name: /^\+ Cars/ }))
     await u.click(screen.getByRole('button', { name: 'Let the agent run a session' }))
     expect((await screen.findByRole('alert')).textContent).toMatch(/not configured/)
   })

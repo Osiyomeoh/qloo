@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import type { AgentOutput, Pending, TraceEvent } from './agent/engine'
 import type { Reaction, Trial } from './core/session'
-import { score, guessAccuracy } from './core/session'
+import { score, guessAccuracy, stopReason } from './core/session'
 import { MswoAssessment } from './Mswo'
 import { MSWO_ITEMS } from './core/mswo'
 import { loadHistory, saveSession, knownFavourites, type Item } from './core/history'
 import { Burst, POSITIVE, ReactionIcon, VoiceMark } from './Art'
 import { inline, prose } from './prose'
+import { Board, PrintCards, BOARD_MAX } from './Board'
+import { printCards, sentence } from './say'
+import { EVIDENCE } from './evidence'
 
-export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; error?: string }>
+export type AgentTransport = (body: unknown) => Promise<AgentOutput & { qlooMode?: string; sig?: string; error?: string }>
 
 export const fetchTransport: AgentTransport = async body => {
   const res = await fetch('/api/agent', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
@@ -23,7 +26,7 @@ const ICON: Record<TraceEvent['kind'], string> = { thought: '💭', tool: '🔎'
 const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
 
 export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds: Card[]; notes: string; transport?: AgentTransport }) {
-  const [out, setOut] = useState<AgentOutput & { qlooMode?: string }>()
+  const [out, setOut] = useState<AgentOutput & { qlooMode?: string; sig?: string }>()
   const [trace, setTrace] = useState<TraceEvent[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
   const [error, setError] = useState<string>()
@@ -57,13 +60,14 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
   })
 
   const respond = (pending: Pending, result: unknown) => {
-    const { messages, steps, toolCalls } = out!
+    const { messages, steps, toolCalls, sig } = out!
     setOut(undefined)
-    void call({ state: { messages, steps, toolCalls }, pending, result })
+    void call({ state: { messages, steps, toolCalls }, pending, result, sig })
   }
 
   const p = out?.pending
   const finished = p?.name === 'finish' ? (p.input as { summary: string; new_favourite_ids: string[]; next_time?: string }) : undefined
+  const stopped = stopReason(trials)
   return (
     <section className="agent">
       <h2><span className={`orb ${busy ? 'busy' : p && !finished ? 'wait' : 'idle'}`} aria-hidden />Agent session</h2>
@@ -74,11 +78,12 @@ export function AgentView({ seeds, notes, transport = fetchTransport }: { seeds:
       </ol>
       {error && <p className="warn" role="alert">{error}</p>}
       {(trials.length > 0 || p?.name === 'present_choice') && !finished && <Tally trials={trials} live={p?.name === 'present_choice'} name={id => catalog.get(id)?.name ?? id} />}
+      {stopped && <p className="stopped" role="status"><strong>Stopped early.</strong> {stopped}. That's information too, so no more cards today.</p>}
       {p?.name === 'present_choice' && (
         <AgentTrial key={p.id} pending={p} catalog={catalog} onDone={(t, result) => { setTrials(x => [...x, t]); respond(p, { ...(result as object), trials_so_far: trials.length + 1 }) }} />
       )}
       {p?.name === 'ask_carer' && <AskCarer pending={p} onAnswer={a => respond(p, { answer: a })} />}
-      {finished && <Finish data={finished} trials={trials} catalog={catalog} seeds={seeds} />}
+      {finished && <Finish data={finished} trials={trials} catalog={catalog} seeds={seeds} stopped={!!stopped} />}
       {out?.done && !finished && <p>{out.done.reason === 'finished' ? out.done.text : 'Session limit reached.'}</p>}
     </section>
   )
@@ -115,8 +120,8 @@ function AgentTrial({ pending, catalog, onDone }: { pending: Pending; catalog: M
         <button className="link" onClick={() => setChosen(null)}>No choice</button>
       </div>}
       {show && <ChildScreen cards={cards} onPick={id => { setChosen(id); start.current = Date.now() }} onClose={() => setShow(false)} />}
-      {chosen && <>
-        <p className="timer"><span className="beat" aria-hidden />Engaged: {secs}s</p>
+      {chosen && <p className="timer"><span className="beat" aria-hidden />Engaged: {secs}s</p>}
+      {chosen !== undefined && <>
         <div className="chips">{REACTIONS.map(r => <button key={r} data-tone={POSITIVE.has(r) ? 'up' : 'down'} className={reactions.includes(r) ? 'on' : ''} onClick={() => setReactions(x => x.includes(r) ? x.filter(y => y !== r) : [...x, r])}><ReactionIcon r={r} />{r}</button>)}</div>
       </>}
       {chosen !== undefined && <button onClick={() => {
@@ -132,7 +137,7 @@ function AskCarer({ pending, onAnswer }: { pending: Pending; onAnswer: (a: strin
   return <div className="trial"><p className="why">{question}</p><div className="chips">{options.map(o => <button key={o} onClick={() => onAnswer(o)}>{o}</button>)}</div></div>
 }
 
-function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; seeds: Card[] }) {
+function Finish({ data, trials, catalog, seeds, stopped }: { data: { summary: string; new_favourite_ids: string[]; next_time?: string }; trials: Trial[]; catalog: Map<string, Card>; seeds: Card[]; stopped: boolean }) {
   // Only celebrate favourites the logged choices actually support (chosen at least once, not a seed).
   const seedIds = new Set(seeds.map(s => s.id))
   const scored = score(trials).filter(s => s.chosen > 0)
@@ -142,6 +147,9 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
   const name = (id: string) => catalog.get(id)?.name ?? id
   const liked = [...new Set(trials.flatMap(t => t.reactions ?? []).filter(r => ['smile', 'laugh', 'reach', 'vocalise'].includes(r)))]
   const mswoItems = [...new Set([...confirmed, ...scored.map(s => s.id), ...seeds.map(s => s.id)])].slice(0, MSWO_ITEMS.max)
+  const [board, setBoard] = useState(false)
+  const loved = [...confirmed, ...seeds.map(s => s.id), ...scored.map(s => s.id).filter(id => !confirmed.includes(id) && !seedIds.has(id))]
+  const boardCards = loved.slice(0, BOARD_MAX).map(id => catalog.get(id) ?? { id, name: id })
   const saved = useRef(false)
   useEffect(() => {
     if (saved.current) return
@@ -161,7 +169,7 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
         <h3>What I love</h3>
         <p className="src">From a choice session on {new Date().toLocaleDateString()}. Every line below was chosen by me, not guessed for me.</p>
         <div className="love-grid">
-          {[...confirmed, ...seeds.map(s => s.id), ...scored.map(s => s.id).filter(id => !confirmed.includes(id) && !seedIds.has(id))].map((id, k) => {
+          {loved.map((id, k) => {
             const s = scored.find(x => x.id === id)
             return <div key={id} className="love-item" style={{ '--i': k } as CSSProperties}><CardFace c={catalog.get(id) ?? { id, name: id }} /><small>{confirmed.includes(id) ? 'New favourite' : seedIds.has(id) ? 'Already loved' : 'Chosen'}{s ? ` · picked ${s.chosen}×` : ''}</small></div>
           })}
@@ -169,9 +177,21 @@ function Finish({ data, trials, catalog, seeds }: { data: { summary: string; new
         {liked.length > 0 && <p>When I like something I may: {liked.join(', ')}.</p>}
         {data.next_time && <p>Try next: {inline(data.next_time)}</p>}
       </article>
+      <section className="their-board" aria-label="Their board">
+        <h3>Their words</h3>
+        <p>A picture board of what they chose today and the favourites you named. They tap a picture and the device says “{sentence(boardCards[0]?.name ?? '…')}”.</p>
+        <div className="row">
+          <button className="primary" onClick={() => setBoard(true)}>Open their board</button>
+          <button className="secondary" onClick={printCards}>Print as picture cards</button>
+        </div>
+        <p className="src">A board of favourites, not a communication system: use it alongside their AAC or speech therapy plan, not instead. Picture and sign communication hasn’t been found to hold back speech (<a href={EVIDENCE.aacSpeech.url} target="_blank" rel="noreferrer">{EVIDENCE.aacSpeech.cite}</a>).</p>
+      </section>
+      {board && <Board cards={boardCards} onClose={() => setBoard(false)} />}
+      <PrintCards cards={boardCards} />
       <button className="secondary" onClick={() => window.print()}>Print or save as PDF</button>
       <p className="src">Saved on this device only, so the next session can build on it.</p>
-      {mswoItems.length >= MSWO_ITEMS.min && <MswoAssessment items={mswoItems.map(id => catalog.get(id) ?? { id, name: id })} />}
+      {stopped ? <p className="src">The preference assessment can wait for another day.</p>
+        : mswoItems.length >= MSWO_ITEMS.min && <MswoAssessment items={mswoItems.map(id => catalog.get(id) ?? { id, name: id })} />}
     </div>
   )
 }

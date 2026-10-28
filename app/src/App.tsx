@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { SampleClient, type Entity, type QlooClient } from './qloo/client'
-import { KID_TYPES, recommendForKids } from './core/kids'
+import { KID_TYPES, TYPE_LABEL, favouriteHits, recommendForKids } from './core/kids'
 import { pairedSchedule, score, guessAccuracy, nextSignals, type Reaction, type Trial } from './core/session'
 import { buildProfile, SOURCE_LABEL } from './core/profile'
 import { AgentView, Tally, type AgentTransport } from './AgentView'
 import { loadHistory, forgetHistory, knownFavourites, mswoSeries, type SessionRecord } from './core/history'
 import { Burst, HeroArt, POSITIVE, ReactionIcon } from './Art'
+import { Board, BOARD_MAX } from './Board'
+import { EVIDENCE } from './evidence'
 
 export const APP_NAME = 'Unspoken'
 
 type Step = 'seed' | 'propose' | 'session' | 'profile' | 'agent'
+/** Judge links: ?demo=thomas starts with a known favourite already added, so the agent is one click away. */
+const DEMO_SEEDS: Record<string, string> = { thomas: 'Thomas & Friends', bluey: 'Bluey' }
 const REACTIONS: Reaction[] = ['smile', 'laugh', 'reach', 'vocalise', 'look-away', 'push-away', 'distress']
 
 export default function App({ client = new SampleClient() as QlooClient, agent }: { client?: QlooClient; agent?: AgentTransport }) {
@@ -18,6 +22,16 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
   const [seeds, setSeeds] = useState<Entity[]>([])
   const [proposals, setProposals] = useState<Entity[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
+  const [demo] = useState(() => DEMO_SEEDS[new URLSearchParams(window.location.search).get('demo') ?? ''])
+  useEffect(() => {
+    if (!demo) return
+    let live = true
+    client.search(demo).then(r => {
+      const e = r.find(x => x.name === demo && KID_TYPES.includes(x.type)) ?? r.find(x => KID_TYPES.includes(x.type))
+      if (live && e) setSeeds(s => (s.length ? s : [e]))
+    }).catch(() => { /* the person can still type a title */ })
+    return () => { live = false }
+  }, [demo, client])
 
   const all = useMemo(() => [...seeds, ...proposals], [seeds, proposals])
   const byId = useMemo(() => new Map(all.map(e => [e.id, e])), [all])
@@ -49,6 +63,7 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
         </header>
         <HeroArt />
         <div className="panel">
+          {demo && seeds.some(s => s.name === demo) && <p className="demo-note">Demo: <b>{demo}</b> is in as their favourite. Play both parts: guess as the carer, then pick as the child.</p>}
           <SeedStep client={client} seeds={seeds} setSeeds={setSeeds} />
           <label className="notes">Anything the agent should know? (optional, no names)
             <input aria-label="Notes" value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. no loud audio; manages 2 cards" />
@@ -65,6 +80,7 @@ export default function App({ client = new SampleClient() as QlooClient, agent }
           </ul>
         </div>
       </div>}
+      {step === 'seed' && <Research />}
       {step === 'agent' && <AgentView seeds={seeds.map(s => ({ id: s.id, name: s.name, image: s.image }))} notes={notes} transport={agent} />}
       {step === 'propose' && (
         <section>
@@ -96,24 +112,50 @@ function Logo() {
 
 const TrustIcon = ({ d }: { d: string }) => <svg className="trust-icon" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
+/** What the research says, and the design choice each finding led to, with its public source. */
+function Research() {
+  return (
+    <section className="research" aria-label="Why it works this way">
+      <h2>Why it works this way</h2>
+      <ol>
+        {Object.values(EVIDENCE).map(e => (
+          <li key={e.url}>
+            <p>{e.fact} <a href={e.url} target="_blank" rel="noreferrer">{e.cite}</a></p>
+            <p className="so">{e.so}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 function SeedStep({ client, seeds, setSeeds }: { client: QlooClient; seeds: Entity[]; setSeeds: (s: Entity[]) => void }) {
   const [q, setQ] = useState('')
   const [hits, setHits] = useState<Entity[]>([])
+  const [miss, setMiss] = useState<string>()
   return (
     <section className="seed">
       <h2>What do they already love?</h2>
-      <p className="hint">Type a show, film or book they return to. Nothing about the child is sent to Qloo, only the title.</p>
-      <form className="search" onSubmit={async e => { e.preventDefault(); setHits(await client.search(q)) }}>
+      <p className="hint">Type a show, film, book, game or song they return to. Nothing about the child is sent to Qloo, only the title.</p>
+      <form className="search" onSubmit={async e => {
+        e.preventDefault()
+        const found = await client.search(q).then(favouriteHits).catch(() => undefined)
+        setHits(found ?? [])
+        setMiss(!found ? 'Search didn’t work. Check the connection and try again.'
+          : !found.length ? `Nothing found for “${q.trim()}”. Try another spelling, or something else they love.` : undefined)
+      }}>
         <input aria-label="Title" value={q} onChange={e => setQ(e.target.value)} placeholder="e.g. Thomas" />
         <button>Find</button>
       </form>
+      {miss && <p className="hint" role="status">{miss}</p>}
       {hits.length > 0 && <ul className="hits">{hits.map((h, k) => (
-        <li key={h.id} style={{ '--i': k } as CSSProperties}><button className={`hit${seeds.some(s => s.id === h.id) ? ' added' : ''}`} onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name}</button></li>
+        <li key={h.id} style={{ '--i': k } as CSSProperties}><button className={`hit${seeds.some(s => s.id === h.id) ? ' added' : ''}`} onClick={() => !seeds.some(s => s.id === h.id) && setSeeds([...seeds, h])}>+ {h.name} <span className="kind">{TYPE_LABEL[h.type]}{h.year ? `, ${h.year}` : ''}</span></button></li>
       ))}</ul>}
       {seeds.length > 0 && <p key={seeds.length} className="favs">Favourites: {seeds.map(s => s.name).join(', ')}</p>}
       <PhotoSeed onTitles={async titles => {
-        const found = (await Promise.all(titles.map(t => client.search(t).then(r => r[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
+        const found = (await Promise.all(titles.map(t => client.search(t).then(r => favouriteHits(r)[0]).catch(() => undefined)))).filter((e): e is Entity => !!e)
         setHits(found)
+        setMiss(found.length ? undefined : 'No titles from the photo were found. Try typing one instead.')
       }} />
       <LastTime seeds={seeds} setSeeds={setSeeds} />
     </section>
@@ -196,7 +238,7 @@ function Session({ ids, byId, onDone }: { ids: string[]; byId: Map<string, Entit
           ))}</div>
         </>
       )}
-      {chosen !== undefined && <button onClick={finishTrial}>{chosen ? 'He’s finished with it' : 'Next'}</button>}
+      {chosen !== undefined && <button onClick={finishTrial}>{chosen ? 'They’re finished with it' : 'Next'}</button>}
     </section>
   )
 }
@@ -223,6 +265,7 @@ function Profile({ all, trials, onMore }: { all: Entity[]; trials: Trial[]; onMo
 /** Earlier sessions, read from this device only. */
 function LastTime({ seeds, setSeeds }: { seeds: Entity[]; setSeeds: (s: Entity[]) => void }) {
   const [h, setH] = useState(loadHistory)
+  const [board, setBoard] = useState(false)
   if (!h.length) return null
   const favs = knownFavourites(h)
   const last = h[h.length - 1]
@@ -230,6 +273,8 @@ function LastTime({ seeds, setSeeds }: { seeds: Entity[]; setSeeds: (s: Entity[]
     <div className="last-time" aria-label="Last time">
       <p><strong>Last time</strong> ({new Date(last.date).toLocaleDateString()}, {h.length} session{h.length > 1 ? 's' : ''} on this device): {favs.map(f => f.name).join(', ') || 'no favourites yet'}</p>
       {favs.length > 0 && <button className="secondary" onClick={() => setSeeds([...seeds, ...favs.filter(f => !seeds.some(s => s.id === f.id)).slice(0, 5).map(f => (({ id: f.id, name: f.name, image: f.image, type: seeds[0]?.type ?? 'movie', tags: [] })))])}>Start from last session</button>}
+      {favs.length > 0 && <button className="secondary" onClick={() => setBoard(true)}>Open their board</button>}
+      {board && <Board cards={favs.slice(0, BOARD_MAX)} onClose={() => setBoard(false)} />}
       <button className="link" onClick={() => { forgetHistory(); setH([]) }}>Forget</button>
       <Trend h={h} />
     </div>

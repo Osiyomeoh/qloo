@@ -38,10 +38,10 @@ describe('qloo proxy', () => {
 describe('response parsing', () => {
   it('handles results arrays and results.entities, skips malformed rows', () => {
     const body = { results: { entities: [
-      { entity_id: 'E1', name: 'Cars', types: ['urn:entity:movie'], tags: [{ name: 'racing' }, 'animation'], properties: { content_rating: 'G', image: { url: 'https://i/x.jpg' } } },
+      { entity_id: 'E1', name: 'Cars', types: ['urn:entity:movie'], tags: [{ name: 'racing' }, 'animation'], properties: { content_rating: 'G', release_year: 2006, image: { url: 'https://i/x.jpg' } } },
       { name: 'no id' }, null,
     ] } }
-    expect(parseEntities(body, 'tv_show')).toEqual([{ id: 'E1', name: 'Cars', type: 'movie', tags: ['racing', 'animation'], rating: 'G', image: 'https://i/x.jpg' }])
+    expect(parseEntities(body, 'tv_show')).toEqual([{ id: 'E1', name: 'Cars', type: 'movie', tags: ['racing', 'animation'], rating: 'G', year: 2006, image: 'https://i/x.jpg' }])
     expect(parseEntities({ results: [{ id: 'E2', name: 'Bluey' }] }, 'tv_show')[0]).toMatchObject({ id: 'E2', type: 'tv_show', tags: [] })
     expect(parseEntities('garbage', 'movie')).toEqual([])
   })
@@ -52,7 +52,7 @@ describe('live client', () => {
     const f = vi.fn(async () => ok({ results: [{ id: 'E2', name: 'Bluey' }] }))
     const c = new LiveClient(f as unknown as typeof fetch)
     expect((await c.search('bluey'))[0].name).toBe('Bluey')
-    expect(String((f.mock.calls[0] as unknown as [string])[0])).toBe('/api/qloo?query=bluey&take=5&op=search')
+    expect(String((f.mock.calls[0] as unknown as [string])[0])).toBe('/api/qloo?query=bluey&take=10&op=search')
     const bad = new LiveClient((async () => ok({ error: 'Qloo rate limit reached; try again shortly' }, 429)) as typeof fetch)
     await expect(bad.recommend('movie', ['abcdefgh-1'], [], [])).rejects.toThrow(/rate limit/)
   })

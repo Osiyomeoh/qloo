@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "eval:photos": "tsx scripts/photo-eval.ts",
-    "benchmark": "tsx scripts/benchmark.ts"
+    "benchmark": "tsx scripts/benchmark.ts",
+    "eval:filter": "tsx scripts/filter-eval.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.34.2",

@@ -73,7 +73,8 @@ const SEARCH_PARAMS = new Set(['query', 'types', 'take'])
 export function buildSearchParams(query: string, type?: EntityType): URLSearchParams {
   const q = query.trim()
   if (!q || q.length > 120) throw new Error('search query must be 1-120 characters')
-  const p = new URLSearchParams({ query: q, take: '5' })
+  // 10, not 5: places, brands and albums are dropped afterwards (favouriteHits), so ask for enough to keep 5.
+  const p = new URLSearchParams({ query: q, take: '10' })
   if (type) p.set('types', `urn:entity:${type}`)
   return p
 }

@@ -1,0 +1,2733 @@
+{
+  "rule": "older = PG-13, R, NC-17, TV-14, TV-MA, T, M, AO, Explicit; children = G, PG, TV-Y, TV-Y7, TV-G, E, E10+; unclear = anything else or unrated",
+  "summary": {
+    "cases": 7,
+    "unfiltered": {
+      "filmTvGames": 210,
+      "older": 33,
+      "unclear": 33,
+      "podcasts": 70,
+      "podcastsExplicit": 9
+    },
+    "shown": {
+      "total": 191,
+      "older": 0,
+      "unclear": 0,
+      "leftOutAfterQloo": 19
+    }
+  },
+  "results": [
+    {
+      "case": "trains (TV)",
+      "seeds": [
+        "Thomas & Friends",
+        "Chuggington"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Chupa",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Magician's Elephant",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Mummies",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Night at the Museum: Kahmunrah Rises Again",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Tad the Lost Explorer and the Emerald Tablet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Jungle Beat: The Movie",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Lyle, Lyle, Crocodile",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Terra Willy",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Back to the Outback",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Gnome Alone",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Chupa",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Magician's Elephant",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Mummies",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Night at the Museum: Kahmunrah Rises Again",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Tad the Lost Explorer and the Emerald Tablet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Jungle Beat: The Movie",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Lyle, Lyle, Crocodile",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Terra Willy",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Back to the Outback",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Gnome Alone",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "trains (TV)",
+      "seeds": [
+        "Thomas & Friends",
+        "Chuggington"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Bob the Builder",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Ben & Holly's Little Kingdom",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Peppa Pig",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Pocoyo",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Charlie and Lola",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "PAW Patrol",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Blue's Clues",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Fireman Sam",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Thomas & Friends: All Engines Go",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Bob the Builder",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Ben & Holly's Little Kingdom",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Peppa Pig",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Pocoyo",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Charlie and Lola",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "PAW Patrol",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Blue's Clues",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Fireman Sam",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Thomas & Friends: All Engines Go",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "trains (TV)",
+      "seeds": [
+        "Thomas & Friends",
+        "Chuggington"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Super Mario Odyssey",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Run",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Kirby's Epic Yarn",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros. Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Galaxy",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Galaxy 2",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Yoshi's Crafted World",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Yoshi's Woolly World",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Super Mario Odyssey",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Kirby's Epic Yarn",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros. Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Galaxy",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Galaxy 2",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Yoshi's Crafted World",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Yoshi's Woolly World",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 1
+    },
+    {
+      "case": "trains (TV)",
+      "seeds": [
+        "Thomas & Friends",
+        "Chuggington"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Mystery and Murder: Analysis by Dr. Phil",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "Small Town Dicks",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "Moms and Mysteries: A True Crime Podcast",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "MURDERISH",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "Crime Junkie",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Real Life Real Crime",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Dateline NBC",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Crime Stories with Nancy Grace",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Big Mad True Crime",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "Southern Fried True Crime",
+          "rating": "Explicit",
+          "verdict": "older"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "vehicles (film)",
+      "seeds": [
+        "Cars",
+        "Planes"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Turbo",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Monsters University",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Despicable Me 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Despicable Me",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Croods",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cloudy with a Chance of Meatballs 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cars 2",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Madagascar 3: Europe's Most Wanted",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Wreck-It Ralph",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cloudy with a Chance of Meatballs",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Turbo",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Monsters University",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Despicable Me 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Despicable Me",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Croods",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cloudy with a Chance of Meatballs 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cars 2",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Madagascar 3: Europe's Most Wanted",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Wreck-It Ralph",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Cloudy with a Chance of Meatballs",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "vehicles (film)",
+      "seeds": [
+        "Cars",
+        "Planes"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Masters of the Air",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "Rogue Heroes",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "Top Gear",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Meerkat Manor",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Fallout",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "Jack Whitehall: Travels with My Father",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "A Small Light",
+          "rating": "TV-14",
+          "verdict": "older"
+        },
+        {
+          "name": "Redwall",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "The Completely Made-Up Adventures of Dick Turpin",
+          "rating": "TV-14",
+          "verdict": "older"
+        },
+        {
+          "name": "007: Road to a Million",
+          "rating": "TV-MA",
+          "verdict": "older"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Redwall",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "The Adventures of Jimmy Neutron: Boy Genius",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Watership Down",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Shaun the Sheep",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Arthur",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Around the World in 80 Days",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Kid vs. Kat",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "The Young Indiana Jones Chronicles",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Storm Hawks",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Flight 29 Down",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "vehicles (film)",
+      "seeds": [
+        "Cars",
+        "Planes"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart DS",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros. Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Run",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Mario Kart: Double Dash!!",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Odyssey",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 7",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Wii Sports Resort",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart DS",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros. Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart: Double Dash!!",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Odyssey",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 7",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Wii Sports Resort",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 1
+    },
+    {
+      "case": "vehicles (film)",
+      "seeds": [
+        "Cars",
+        "Planes"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Stuff You Missed in History Class",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff You Should Know",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff To Blow Your Mind",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff Mom Never Told You",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Ridiculous History",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "the memory palace",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Lore",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Radiolab",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Part-Time Genius",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "BackStory",
+          "rating": "Clean",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "characters (TV)",
+      "seeds": [
+        "Bluey",
+        "Peppa Pig"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Trolls World Tour",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Secret Life of Pets 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Trolls",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Croods: A New Age",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Peter Rabbit",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Sing",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Trolls Holiday",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Ferdinand",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Grinch",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Abominable",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Trolls World Tour",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Secret Life of Pets 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Trolls",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Croods: A New Age",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Peter Rabbit",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Sing",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Ferdinand",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Grinch",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Abominable",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Onward",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "characters (TV)",
+      "seeds": [
+        "Bluey",
+        "Peppa Pig"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Pocoyo",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Charlie and Lola",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Ben & Holly's Little Kingdom",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Hey Duggee",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Blue's Clues",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Kipper",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Daniel Tiger's Neighborhood",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Clifford the Big Red Dog",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Max & Ruby",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Pocoyo",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Charlie and Lola",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Ben & Holly's Little Kingdom",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Hey Duggee",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Blue's Clues",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Kipper",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Daniel Tiger's Neighborhood",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Clifford the Big Red Dog",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Max & Ruby",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "characters (TV)",
+      "seeds": [
+        "Bluey",
+        "Peppa Pig"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Miitopia",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Stardew Valley",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Tomodachi Life",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Undertale",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Animal Crossing: New Horizons",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Dream Daddy: A Dad Dating Simulator",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Animal Crossing: New Leaf",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: Pocket Camp",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Untitled Goose Game",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: Wild World",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Miitopia",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Stardew Valley",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Tomodachi Life",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: New Horizons",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: New Leaf",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: Pocket Camp",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Untitled Goose Game",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Animal Crossing: Wild World",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 2
+    },
+    {
+      "case": "characters (TV)",
+      "seeds": [
+        "Bluey",
+        "Peppa Pig"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "The Purpose Show",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Mystery and Murder: Analysis by Dr. Phil",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "These Are The Days",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Rachel Hollis Podcast",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Living Easy with Lindsey",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Better Life Project™",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Hope We Hold",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Rise Together Podcast",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Proverbs 31 Ministries Podcast",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Couple Things with Shawn and Andrew",
+          "rating": "Clean",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "superheroes (film)",
+      "seeds": [
+        "Spider-Man: Into the Spider-Verse",
+        "The Incredibles"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Incredibles 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 2",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ratatouille",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Monsters, Inc.",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Avengers: Infinity War",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "Cars",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 3",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ralph Breaks the Internet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "How to Train Your Dragon: The Hidden World",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Incredibles 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 2",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ratatouille",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Monsters, Inc.",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Cars",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 3",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ralph Breaks the Internet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "How to Train Your Dragon: The Hidden World",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 4",
+          "rating": "G",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "superheroes (film)",
+      "seeds": [
+        "Spider-Man: Into the Spider-Verse",
+        "The Incredibles"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "No Ordinary Family",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Cloak & Dagger",
+          "rating": "TV-14",
+          "verdict": "older"
+        },
+        {
+          "name": "Raising Dion",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Doom Patrol",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "Runaways",
+          "rating": "TV-14",
+          "verdict": "older"
+        },
+        {
+          "name": "Extraordinary",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "The Gifted",
+          "rating": "TV-14",
+          "verdict": "older"
+        },
+        {
+          "name": "American Dragon: Jake Long",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Teen Titans",
+          "rating": "TV-Y7-FV",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stargirl",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [
+        {
+          "name": "American Dragon: Jake Long",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "My Life as a Teenage Robot",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Villains of Valley View",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Miraculous: Tales of Ladybug & Cat Noir",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Kim Possible",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ben 10: Alien Force",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "W.I.T.C.H.",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Spider-Man",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Totally Spies!",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "The Adventures of Jimmy Neutron: Boy Genius",
+          "rating": "TV-G",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "superheroes (film)",
+      "seeds": [
+        "Spider-Man: Into the Spider-Verse",
+        "The Incredibles"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Marvel's Spider-Man: Miles Morales",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "Marvel's Spider-Man",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "Batman: Arkham Knight",
+          "rating": "M",
+          "verdict": "older"
+        },
+        {
+          "name": "Marvel's Guardians of the Galaxy",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "LEGO Marvel's Avengers",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "LEGO Marvel Super Heroes 2",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "LEGO DC Super-Villains",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Batman: Return to Arkham",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "Tomb Raider: Definitive Edition",
+          "rating": "M",
+          "verdict": "older"
+        },
+        {
+          "name": "inFamous: First Light",
+          "rating": "T",
+          "verdict": "older"
+        }
+      ],
+      "shown": [
+        {
+          "name": "LEGO Marvel's Avengers",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "LEGO Marvel Super Heroes 2",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "LEGO DC Super-Villains",
+          "rating": "E10+",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 7
+    },
+    {
+      "case": "superheroes (film)",
+      "seeds": [
+        "Spider-Man: Into the Spider-Verse",
+        "The Incredibles"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Stuff You Should Know",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "No Such Thing As A Fish",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff You Missed in History Class",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff To Blow Your Mind",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Welcome to Night Vale",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Radiolab",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "99% Invisible",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Science Vs",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Cracked Podcast",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "The Allusionist",
+          "rating": "Clean",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "dinosaurs (film)",
+      "seeds": [
+        "The Land Before Time",
+        "The Good Dinosaur"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Dinosaur",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Brother Bear",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Lilo & Stitch",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Fox and the Hound",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Bambi",
+          "rating": "Approved",
+          "verdict": "unclear"
+        },
+        {
+          "name": "An American Tail",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Balto",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Spirit: Stallion of the Cimarron",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Tarzan",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Rescuers Down Under",
+          "rating": "G",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Dinosaur",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Brother Bear",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Lilo & Stitch",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Fox and the Hound",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "An American Tail",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Balto",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Spirit: Stallion of the Cimarron",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Tarzan",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Rescuers Down Under",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Rescuers",
+          "rating": "G",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "dinosaurs (film)",
+      "seeds": [
+        "The Land Before Time",
+        "The Good Dinosaur"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Wild Kratts",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Dinosaur Train",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "PAW Patrol",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Peppa Pig",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Backyardigans",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Octonauts",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Dinotrux",
+          "rating": "TV-Y7-FV",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Land of the Lost",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Lion Guard",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Wild Kratts",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Dinosaur Train",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "PAW Patrol",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Peppa Pig",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Backyardigans",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Octonauts",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Curious George",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Land of the Lost",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Lion Guard",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Charlie and Lola",
+          "rating": "TV-Y",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "dinosaurs (film)",
+      "seeds": [
+        "The Land Before Time",
+        "The Good Dinosaur"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "RiME",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Journey",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "flower",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Little Nightmares",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "The Last Guardian",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "Shadow of the Colossus",
+          "rating": "T",
+          "verdict": "older"
+        },
+        {
+          "name": "Untitled Goose Game",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Undertale",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Night in the Woods",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Until Dawn",
+          "rating": "M",
+          "verdict": "older"
+        }
+      ],
+      "shown": [
+        {
+          "name": "RiME",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Journey",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "flower",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Untitled Goose Game",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 6
+    },
+    {
+      "case": "dinosaurs (film)",
+      "seeds": [
+        "The Land Before Time",
+        "The Good Dinosaur"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Stuff You Missed in History Class",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Lore",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff You Should Know",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Welcome to Night Vale",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Myths and Legends",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Aaron Mahnke's Cabinet of Curiosities",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Unexplained",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff Mom Never Told You",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Stuff To Blow Your Mind",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Unobscured",
+          "rating": "Clean",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "video games",
+      "seeds": [
+        "Minecraft",
+        "Mario Kart 8 DLC Pack 1"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "Spider-Man: Into the Spider-Verse",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Pokémon: Detective Pikachu",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Spider-Man: Far from Home",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "Ralph Breaks the Internet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 4",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Shazam!",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "Invader ZIM: Enter the Florpus",
+          "rating": "TV-Y7-FV",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Incredibles 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Lego Movie 2: The Second Part",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Onward",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Spider-Man: Into the Spider-Verse",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Pokémon: Detective Pikachu",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Ralph Breaks the Internet",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Toy Story 4",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Incredibles 2",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Lego Movie 2: The Second Part",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Onward",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Sonic the Hedgehog",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "How to Train Your Dragon: The Hidden World",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Frozen II",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "video games",
+      "seeds": [
+        "Minecraft",
+        "Mario Kart 8 DLC Pack 1"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Whose Line Is It Anyway?",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Whose Line Is It Anyway?",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Lego Masters",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Teen Titans Go!",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Mysterious Benedict Society",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Kids in the Hall",
+          "rating": "TV-MA",
+          "verdict": "older"
+        },
+        {
+          "name": "Penn & Teller: Fool Us",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Odd Squad",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Muppets Mayhem",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "The Greatest American Hero",
+          "rating": "TV-14",
+          "verdict": "older"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Odd Squad",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "Monsters at Work",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Wonderful World of Disney",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Kim Possible",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Pee-wee's Playhouse",
+          "rating": "TV-Y",
+          "verdict": "children"
+        },
+        {
+          "name": "The Red Green Show",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "The Carol Burnett Show",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Supermarket Sweep",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Fat Albert and the Cosby Kids",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Mork & Mindy",
+          "rating": "TV-G",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "video games",
+      "seeds": [
+        "Minecraft",
+        "Mario Kart 8 DLC Pack 1"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 7",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart: Double Dash!!",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Minecraft: Pocket Edition",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Mario Kart Tour",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart DS",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Sports Mix",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Maker",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Mario Kart 8 Deluxe",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart 7",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart: Double Dash!!",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart Tour",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart DS",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Kart Wii",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "New Super Mario Bros.",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario Sports Mix",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Mario Maker",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 1
+    },
+    {
+      "case": "video games",
+      "seeds": [
+        "Minecraft",
+        "Mario Kart 8 DLC Pack 1"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Welcome to Night Vale",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Serial",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Rabbits",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Sword and Scale",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Lore",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Casefile True Crime",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "Dirty John",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Limetown",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Alice Isn't Dead",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Within the Wires",
+          "rating": "Clean",
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "picture books",
+      "seeds": [
+        "The Very Hungry Caterpillar",
+        "The Gruffalo (Gruffalo, #1)"
+      ],
+      "type": "movie",
+      "unfiltered": [
+        {
+          "name": "The Secret Life of Bees",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "Everybody's Fine",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Divine Secrets of the Ya-Ya Sisterhood",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "American Teen",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "Because of Winn-Dixie",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Driving Lessons",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "The Secret Garden",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Miss Potter",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Stranger Than Fiction",
+          "rating": "PG-13",
+          "verdict": "older"
+        },
+        {
+          "name": "August Rush",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Because of Winn-Dixie",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "The Secret Garden",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Miss Potter",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "August Rush",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Bridge to Terabithia",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Penelope",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Matilda",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Paulie",
+          "rating": "PG",
+          "verdict": "children"
+        },
+        {
+          "name": "Mr. Magorium's Wonder Emporium",
+          "rating": "G",
+          "verdict": "children"
+        },
+        {
+          "name": "Opal Dream",
+          "rating": "PG",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "picture books",
+      "seeds": [
+        "The Very Hungry Caterpillar",
+        "The Gruffalo (Gruffalo, #1)"
+      ],
+      "type": "tv_show",
+      "unfiltered": [
+        {
+          "name": "Restaurant: Impossible",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Ca$h Cab",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Hotel Impossible",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Man v. Food",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Bar Rescue",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "My Cat from Hell",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Trading Spaces",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Tanked",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Wife Swap",
+          "rating": "TV-PG",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Iron Chef",
+          "rating": null,
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Restaurant: Impossible",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Man v. Food",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Trading Spaces",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Dog Whisperer with Cesar Millan",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Chopped",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Antiques Roadshow US",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Supernanny",
+          "rating": "TV-Y7",
+          "verdict": "children"
+        },
+        {
+          "name": "Supermarket Sweep",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Diners, Drive-ins and Dives",
+          "rating": "TV-G",
+          "verdict": "children"
+        },
+        {
+          "name": "Good Eats",
+          "rating": "TV-G",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 0
+    },
+    {
+      "case": "picture books",
+      "seeds": [
+        "The Very Hungry Caterpillar",
+        "The Gruffalo (Gruffalo, #1)"
+      ],
+      "type": "videogame",
+      "unfiltered": [
+        {
+          "name": "Kirby's Epic Yarn",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "The Legend of Zelda: Skyward Sword",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Paper Mario",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario: Sticker Star",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario: The Thousand-Year Door",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Undertale",
+          "rating": "",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Luigi's Mansion",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "The Legend of Zelda: The Minish Cap",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario &amp; Luigi: Superstar Saga",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "shown": [
+        {
+          "name": "Kirby's Epic Yarn",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "The Legend of Zelda: Skyward Sword",
+          "rating": "E10+",
+          "verdict": "children"
+        },
+        {
+          "name": "Super Paper Mario",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario: Sticker Star",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario: The Thousand-Year Door",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Luigi's Mansion",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "The Legend of Zelda: The Minish Cap",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Mario &amp; Luigi: Superstar Saga",
+          "rating": "E",
+          "verdict": "children"
+        },
+        {
+          "name": "Paper Mario",
+          "rating": "E",
+          "verdict": "children"
+        }
+      ],
+      "leftOutAfterQloo": 1
+    },
+    {
+      "case": "picture books",
+      "seeds": [
+        "The Very Hungry Caterpillar",
+        "The Gruffalo (Gruffalo, #1)"
+      ],
+      "type": "podcast",
+      "unfiltered": [
+        {
+          "name": "Hidden Brain",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Criminal",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Serial",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "Invisibilia",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Radiolab",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "S-Town",
+          "rating": "Explicit",
+          "verdict": "older"
+        },
+        {
+          "name": "This American Life",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Embedded",
+          "rating": null,
+          "verdict": "unclear"
+        },
+        {
+          "name": "Revisionist History",
+          "rating": "Clean",
+          "verdict": "unclear"
+        },
+        {
+          "name": "StoryCorps",
+          "rating": null,
+          "verdict": "unclear"
+        }
+      ],
+      "shown": [],
+      "leftOutAfterQloo": 0
+    }
+  ]
+}

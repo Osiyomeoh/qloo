@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { suitableForChildren, recommendForKids, KID_RATINGS } from './kids'
+import { suitableForChildren, recommendForKids, favouriteHits, KID_RATINGS } from './kids'
 import type { Entity, QlooClient } from '../qloo/client'
 import type { EntityType } from './qlooRequest'
 
@@ -23,6 +23,22 @@ describe('suitable for children', () => {
     expect(suitableForChildren(e('book'))).toBe(true)
     expect(suitableForChildren(e('artist'))).toBe(true)
     expect(suitableForChildren(e('podcast', 'Clean'))).toBe(false)
+  })
+})
+
+describe('favourite hits', () => {
+  it('keeps only what a child can be shown, once per name, kind and year, at most 5', () => {
+    // Shapes seen live 2026-10-28: "Ms Rachel" gave a supermarket, a pizzeria and a podcast; Peppa Pig came back as artist, brand and TV show.
+    const h = (id: string, name: string, type: string): Entity => ({ id, name, type: type as EntityType, tags: [] })
+    const hits = [h('a', 'Ms Rachel', 'place'), h('b', 'Ms Rachel', 'podcast'), h('c', 'Peppa Pig', 'brand'), h('d', 'Peppa Pig', 'tv_show'),
+      h('e', 'Peppa Pig', 'artist'), h('f', 'peppa pig', 'tv_show'), h('g', 'Frozen', 'album'), h('i', 'Frozen', 'movie')]
+    expect(favouriteHits(hits).map(x => x.id)).toEqual(['d', 'e', 'i'])
+    expect(favouriteHits(['1', '2', '3', '4', '5', '6'].map(n => h(n, `Book ${n}`, 'book')))).toHaveLength(5)
+    // "Frozen" live: the 2013 PG film and a 2010 R-rated one. Unrated stays.
+    const frozen = [{ ...h('j', 'Frozen', 'movie'), year: 2013, rating: 'PG' }, { ...h('k', 'Frozen', 'movie'), year: 2010, rating: 'R' },
+      { ...h('l', 'Halo', 'videogame'), rating: 'M' }, { ...h('m', 'Ms. Rachel', 'tv_show') }]
+    expect(favouriteHits(frozen).map(x => x.id)).toEqual(['j', 'm'])
+    expect(favouriteHits([{ ...h('n', 'The Lion King', 'movie'), year: 1994 }, { ...h('o', 'The Lion King', 'movie'), year: 2019 }])).toHaveLength(2)
   })
 })
 

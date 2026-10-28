@@ -25,11 +25,13 @@ export function parseEntities(body: unknown, fallbackType: EntityType): Entity[]
     const props = rec(r.properties)
     const rating = props?.content_rating
     const img = rec(props?.image)?.url
+    const year = props?.release_year
     out.push({
       id, name: r.name, tags,
       type: (urn?.slice('urn:entity:'.length) as EntityType) ?? fallbackType,
       ...(typeof rating === 'string' ? { rating } : {}),
       ...(typeof img === 'string' ? { image: img } : {}),
+      ...(typeof year === 'number' ? { year } : {}),
       ...(typeof r.popularity === 'number' ? { popularity: r.popularity } : {}),
     })
   }
