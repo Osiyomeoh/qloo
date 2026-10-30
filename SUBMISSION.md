@@ -9,6 +9,8 @@ Required ([rules](https://qloo.devpost.com/rules)): working demo link · public 
 **Name:** Unspoken
 **Tagline:** Find what they love, by letting them choose.
 
+**Some children can't tell you what they love. But they can choose.** Unspoken lets carers of non-speaking children find new favourites: Qloo finds what to try, and the child's choices decide. In our demo session the carer guessed right 1 time in 6; the choices found a new favourite in 6 picks.
+
 **Inspiration.** A child who can't speak still has favourites. New ones give comfort, motivation and something to share, but carers find them by trial and error. Behaviour analysts use preference assessments (paired choice, MSWO), but those rank a fixed set of things. They don't discover anything new.
 
 **What it does.** The carer names one thing the child loves, say *Bluey*. Only the title goes to Qloo. An agent (Claude on AWS Bedrock) uses Qloo to find related things that are rated for children and shows two pictures at a time. The carer guesses, the child chooses, the carer logs the pick and the reaction. The agent stays close to what won, branches, or stops: after about 6 choices, once a new favourite is chosen twice, or early if the child stops choosing or is upset (enforced in code). The result is *Their world*, a map of real cover pictures where Qloo draws the links and only the child's choices colour them, and a one-page profile in the child's voice, *Meet me through my choices*, to print for school or a therapist. A picture board lets the child say "I want …" by tapping.
@@ -25,7 +27,11 @@ Required ([rules](https://qloo.devpost.com/rules)): working demo link · public 
 
 **Honest limits.** Not therapy or diagnosis. No evidence yet about real children. A plain LLM benchmark did not show Qloo recommending better, so we don't claim it.
 
-**Try it:** https://unspoken-mu.vercel.app/?demo=bluey (no account) · Repo: https://github.com/Osiyomeoh/qloo
+**Try it:** https://unspoken-mu.vercel.app/?demo=bluey (no account) · Video: https://youtu.be/1WQjsmcRdrg · Repo: https://github.com/Osiyomeoh/qloo
+
+Video: https://youtu.be/1WQjsmcRdrg
+
+Gallery images (upload in this order): `docs/img/1-hook.png`, `2-cards.png`, `3-choose.png`, `4-world.png`, `5-profile.png`, then `hero.png` as the thumbnail.
 
 ## Video script (optional, ~2 min)
 

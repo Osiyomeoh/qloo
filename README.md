@@ -1,8 +1,40 @@
 # Unspoken
 
-**Find what they love, by letting them choose.** For carers of children who can't say what they like, but can choose between two things.
+**Some children can't tell you what they love. But they can choose.**
 
-Live: https://unspoken-mu.vercel.app · Built on [Qloo](https://qloo.com) and Claude · MIT licence
+Unspoken helps carers of non-speaking children find new favourites. [Qloo](https://qloo.com) finds what to try; the child's choices decide what they love.
+
+### [▶ Try it in 30 seconds](https://unspoken-mu.vercel.app/?demo=bluey) · [Watch the 2-minute demo](https://youtu.be/1WQjsmcRdrg)
+
+No account, no setup: *Bluey* is already in as the favourite. Play both parts, the carer who guesses and the child who picks.
+
+![Their world map and the one-page profile from a real session on the live site](docs/img/hero.png)
+
+## How it works
+
+| 1. Qloo finds what to try | 2. The carer guesses, the child chooses | 3. Their world | 4. A page in their voice |
+|---|---|---|---|
+| ![](docs/img/2-cards.png) | ![](docs/img/3-choose.png) | ![](docs/img/4-world.png) | ![](docs/img/5-profile.png) |
+| Two children's shows at a time, filtered by Qloo's content ratings, each pair with a reason | Big pictures, full screen. One tap logs the pick and the reaction | Qloo draws the links. Only the child's choices colour them | Every line is something they picked. Print it for school or a therapist |
+
+<details><summary>See a session in motion (GIF)</summary>
+
+![Guess, pick, reaction, next pair](docs/img/session.gif)
+</details>
+
+In the session above (the team playing both parts, not a child), the agent found a new favourite, *Sarah & Duck*, in 6 choices. The carer's guess was right 1 time in 6. That gap is the point: **choices show what guesses miss.**
+
+## For the judges
+
+| Criterion | What to look at |
+|---|---|
+| **Idea** | Preference assessments (paired choice, MSWO) are standard practice but only rank things you already have. Unspoken uses Qloo to *discover* new ones, and still scores them by the child's choices |
+| **Impact** | About 30% of autistic children stay minimally verbal ([Tager-Flusberg & Kasari 2013](https://pubmed.ncbi.nlm.nih.gov/24124067/)). A printed page of chosen favourites travels with the child: home, school, therapy |
+| **Technical** | Agent loop with budgets (16 turns, 24 Qloo calls), 5 tools, server-signed session state, privacy allowlist (only titles and Qloo ids reach Qloo), MSWO scoring in plain code, 91 tests |
+| **Design** | Two layers kept apart on purpose: Qloo's links are a reason to try, never evidence. Status comes only from what the child chose |
+| **Why Qloo is essential** | Across 7 pairs of children's favourites, unfiltered Qloo results included **33 of 210** rated for teens or adults. Of the **191** Unspoken could show, **0** were ([how measured](CLAIMS.md)). Qloo's tags also explain each link on the map |
+
+Live: https://unspoken-mu.vercel.app · Built on Qloo and Claude · MIT licence · Every number here comes from a run or a source: see [CLAIMS.md](CLAIMS.md)
 
 ## Why
 
