@@ -21,11 +21,11 @@ Required ([rules](https://qloo.devpost.com/rules)): working demo link · public 
 
 **What we learned.** A link from Qloo is a reason to try something, not proof the child will like it. Keeping those two layers apart is the design.
 
-**What's next.** A pilot with real carers [FILL: status]. Results from Sam's phone session: [FILL].
+**What's next.** A first pilot with real carers and their children, then a real phone test. Neither has happened yet.
 
 **Honest limits.** Not therapy or diagnosis. No evidence yet about real children. A plain LLM benchmark did not show Qloo recommending better, so we don't claim it.
 
-**Try it:** https://unspoken-mu.vercel.app/?demo=bluey (no account) · Repo: [FILL after Sam makes it public]
+**Try it:** https://unspoken-mu.vercel.app/?demo=bluey (no account) · Repo: https://github.com/Osiyomeoh/qloo
 
 ## Video script (optional, ~2 min)
 
@@ -44,5 +44,5 @@ Required ([rules](https://qloo.devpost.com/rules)): working demo link · public 
 
 - [ ] Clear test sessions (Forget) in the browser used for screenshots
 - [ ] Repo public, licence visible in About
-- [ ] [FILL] gaps in CLAIMS and here filled from your phone session, or removed
+- [x] Gaps filled: no phone or pilot results are claimed
 - [ ] Tag `main` at the freeze
